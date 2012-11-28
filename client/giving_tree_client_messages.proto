@@ -1,0 +1,9 @@
+message PlayerRegisterName {
+  optional string name = 1;
+}
+
+
+message PlayerTakeApple {
+}
+
+

@@ -1,0 +1,55 @@
+{
+  "attributes" : {
+    "count_down" : {
+      "data_type" : {
+        "base" : "integer",
+        "default" : 0,
+        "min" : -9223372036854775807,
+        "max" : 9223372036854775807
+      },
+      "persistent" : false
+    },
+    "winner_name" : {
+      "data_type" : {
+        "base" : "string",
+        "default" : "",
+        "max_length" : 128
+      },
+      "persistent" : false
+    },
+    "players" : {
+      "data_type" : {
+        "base" : "object_map",
+        "ownership" : "owner",
+        "capacity" : 16
+      },
+      "persistent" : false
+    },
+    "name" : {
+      "data_type" : {
+        "base" : "string",
+        "default" : "(no name)",
+        "max_length" : 128
+      },
+      "persistent" : true
+    },
+    "apple_count" : {
+      "data_type" : {
+        "base" : "integer",
+        "default" : 0,
+        "min" : 0,
+        "max" : 99999
+      },
+      "persistent" : true
+    },
+    "bet_nanos" : {
+      "data_type" : {
+        "base" : "integer",
+        "default" : 0,
+        "min" : -9223372036854775807,
+        "max" : 9223372036854775807
+      },
+      "persistent" : false
+    }
+  }
+}

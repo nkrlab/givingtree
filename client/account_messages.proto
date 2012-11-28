@@ -1,0 +1,88 @@
+// Copyright (C) 2012 Nexon Korea Corporation All Rights Reserved.
+//
+// This work is confidential and proprietary to Nexon Korea Corporation and
+// must not be used, disclosed, copied, or distributed without the prior
+// consent of Nexon Korea Corporation.
+
+
+//////////////////////////////////////////////////////////////////////////////
+// account messages from client to server.
+
+
+message ClientAccountMessage {
+  enum Type {
+    kAccountLoginRequest = 2;
+    kAccountLogoutRequest = 3;
+    kClientAppMessage = 4;
+  }
+  optional Type type = 1;
+
+  optional AccountLoginRequest login = 2;
+  optional AccountLogoutRequest logout = 3;
+  optional ClientAppMessage app_message = 4;
+}
+
+
+message AccountLoginRequest {
+  optional string account_id = 1;
+  optional string auth_key = 2;
+}
+
+
+message AccountLogoutRequest {
+}
+
+
+message ClientAppMessage {
+  extensions 1000 to max;
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+// account messages from server to client.
+
+
+message ServerAccountMessage {
+  enum Type {
+    kAccountLoginResponse = 2;
+    kAccountLogoutResponse = 3;
+    kAccountMessageResponse = 4;
+    kAccountTimeout = 5;
+    kServerAppMessage = 6;
+  }
+  optional Type type = 1;
+
+  optional AccountLoginResponse login = 2;
+  optional AccountLogoutResponse logout = 3;
+  optional AccountMessageResponse account_message = 4;
+  optional AccountTimeout timeout = 5;
+  optional ServerAppMessage app_message = 6;
+}
+
+
+message AccountLoginResponse {
+  optional int64 fail_code = 1;
+  optional string fail_description = 2;
+}
+
+
+message AccountLogoutResponse {
+  optional int64 fail_code = 1;
+  optional string fail_description = 2;
+}
+
+
+message AccountMessageResponse {
+  optional int64 fail_code = 1;
+  optional string fail_description = 2;
+}
+
+
+message AccountTimeout {
+}
+
+
+message ServerAppMessage {
+  extensions 1000 to max;
+}
+
