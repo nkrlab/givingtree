@@ -1,16 +1,4 @@
-message TreeCountDown {
-  optional int64 count_down = 1;
+message ServerAppDummyMessage {
+  optional int64 dummy = 1;
 }
-
-
-message GameResult {
-  optional string winner = 1;
-
-  message PlayerResult {
-    optional string name = 1;
-    optional int64 bet_nanos = 2;
-  }
-  repeated PlayerResult player_result = 2;
-}
-
 

@@ -27,8 +27,7 @@ extend ClientAppMessage {
 
 message ServerAppMessageType {
   enum Type {
-    kTreeCountDown = 1001;
-    kGameResult = 1002;
+    kServerAppDummyMessage = 1001;  // just as a placeholder.
   }
 }
 
@@ -36,8 +35,7 @@ message ServerAppMessageType {
 extend ServerAppMessage {
   optional ServerAppMessageType.Type server_message_type = 1000;
 
-  optional TreeCountDown tree_count_down = 1001;
-  optional GameResult game_result = 1002;
+  optional ServerAppDummyMessage dummy = 1001;
 }
 
 
