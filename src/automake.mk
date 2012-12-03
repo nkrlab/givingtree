@@ -108,12 +108,8 @@ pkgbin_PROGRAMS += giving_tree
 
 # library 를 만들기 위해서 필요한 file 들.
 giving_tree_SOURCES = \
-  $(top_srcdir)/src/funapi_event_handlers.cc \
-  $(top_srcdir)/src/funapi_event_handlers.h \
-  $(top_srcdir)/src/giving_tree_event_handlers_sub_functions.cc \
-  $(top_srcdir)/src/giving_tree_event_handlers_sub_functions.h \
-  $(top_srcdir)/src/giving_tree_event_handlers.cc \
-  $(top_srcdir)/src/giving_tree_event_handlers.h \
+  $(top_srcdir)/src/event_handlers.cc \
+  $(top_srcdir)/src/event_handlers.h \
   $(top_srcdir)/src/giving_tree_server.cc \
   $(top_srcdir)/src/giving_tree_types.h
 

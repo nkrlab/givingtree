@@ -10,10 +10,13 @@
 #include <funapi/account/account_event_handler_registry.h>
 #include <funapi/account/account.h>
 #include <funapi/account/object_creator_registry.h>
-#include <funapi/object/object.h>
 #include <funapi/common/types.h>
+#include <funapi/object/object.h>
 
 #include "app_messages.pb.h"
+#include "giving_tree_client_messages.pb.h"
+#include "giving_tree_server_messages.pb.h"
+#include "giving_tree_types.h"
 
 
 namespace giving_tree {
@@ -52,6 +55,43 @@ void OnAccountLogout(const fun::Account::Ptr &account);
 void OnAccountTimeout(const fun::Account::Ptr &account);
 void OnAccountMessage(const fun::Account::Ptr &account,
                       const ::ClientAppMessage &msg);
+
+
+///////////////////////////////////////////////////////////
+// app contents.
+
+// 카운트다운 최초 카운트.
+extern const int64_t kCountDownStart;
+
+// room 용 채널의 이름과 서브 아이디.
+extern const fun::string kRoomChannelName;
+extern const fun::string kRoomChannelSubId;
+
+// the one and only world object.
+extern GivingTreePtr the_world;
+
+// world methods.
+void InitializeWorld();
+void TickWorld();
+
+// players methods.
+GivingTreePtr FindPlayer(const string &player_name);
+void InsertPlayer(const GivingTreePtr &player);
+void ErasePlayer(const string &player_name);
+
+// account message handlers.
+void OnPlayerRegisterName(const GivingTreePtr &player,
+                          const ::PlayerRegisterName &msg);
+void OnPlayerTakeApple(const GivingTreePtr &player,
+                       const ::PlayerTakeApple &msg);
+
+// app sub functions.
+void ResetWorld();
+int64_t CountDown();
+void DropApple();
+void ResetPlayerBets(const GivingTreePtrMap &players);
+GivingTreePtr SelectWinner(const GivingTreePtrMap &players);
+void GrantApple(const GivingTreePtr &player);
 
 }  // namespace giving_tree
 
