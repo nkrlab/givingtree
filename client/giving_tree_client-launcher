@@ -1,0 +1,20 @@
+#!/bin/bash -e
+
+protoc --python_out=. \
+       --proto_path=. \
+       ./account_messages.proto
+
+protoc --python_out=. \
+       --proto_path=. \
+       ./giving_tree_client_messages.proto
+
+protoc --python_out=. \
+       --proto_path=. \
+       ./giving_tree_server_messages.proto
+
+protoc --python_out=. \
+       --proto_path=. \
+       ./app_messages_for_client.proto
+
+python giving_tree_client.py
+

@@ -26,7 +26,7 @@ from twisted.protocols import basic
 # apps 의 top-level tools directory 를 python path 에 추가한다.
 # 이로써 funapi_server_stub 을 include 할 수 있다.
 exec_dir = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(exec_dir + '/../../tools')
+sys.path.append(exec_dir + '/tools')
 import funapi_server_stub
 
 LOG_FORMAT = '%(asctime)-15s %(message)s'
@@ -120,11 +120,9 @@ class ChatReader(basic.LineReceiver, funapi_server_stub.CallbackInterface):
 
   def on_message_received(self, protocol, message):
     """funapi_server_stub.EventHandlerInterface"""
-    #reply = pb.Reply()
-    #reply.ParseFromString(message)
-    #assert self.protocol == protocol
-    #print >> sys.stdout, str(reply)
-    print >> sys.stdout, "Message received."
+    server_msg = account_pb.ServerAccountMessage()
+    server_msg.ParseFromString(message)
+    print >> sys.stdout, "Message received: " + str(server_msg)
 
 
 def main(argv):
