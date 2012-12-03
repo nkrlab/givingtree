@@ -7,6 +7,7 @@
 #include "funapi_event_handlers.h"
 
 #include <funapi/account/account.h>
+#include <funapi/account/multicaster.h>
 #include <funapi/api/clock.h>
 #include <funapi/common/serialization/bson_archive.h>
 #include <funapi/object/object.h>
@@ -22,10 +23,14 @@ const int64_t kWorldTickMicrosecond = 1000000;  // 1 second.
 const fun::string kWorldObjectModelName("GivingTree");
 const fun::string kAccountObjectModelName("Player");
 
+const fun::string kRoomChannelName("room");
+const fun::string kRoomChannelSubId("1");
+
 
 void OnWorldReady(int64_t /*now_nanosec*/) {
   the_world = GivingTree::CreateNew(kWorldObjectModelName);
   InitializeWorld();
+  the_world->EnterChannel(kRoomChannelName, kRoomChannelSubId);
 }
 
 
@@ -49,6 +54,8 @@ fun::Object::Ptr DeserializeObject(const fun::string &serial) {
 void OnAccountLogin(const fun::Account::Ptr &account) {
   GivingTreePtr player = GivingTree::Cast(account->object());
   const string &player_name = player->name();
+  fun::Multicaster::Get().EnterChannel(kRoomChannelName, kRoomChannelSubId,
+                                       account);
 
   FUN_LOG_INFO << "account login[" << account->account_id()
                << "] player name[" << player_name
@@ -61,6 +68,8 @@ void OnAccountLogout(const fun::Account::Ptr &account) {
   GivingTreePtr player = GivingTree::Cast(account->object());
   const string &player_name = player->name();
   ErasePlayer(player_name);
+  fun::Multicaster::Get().LeaveChannel(kRoomChannelName, kRoomChannelSubId,
+                                       account);
 
   FUN_LOG_INFO << "account logout[" << account->account_id()
                << "] player name[" << player_name
