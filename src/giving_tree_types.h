@@ -4,8 +4,8 @@
 // must not be used, disclosed, copied, or distributed without the prior
 // consent of Nexon Korea Corporation.
 
-#ifndef GIVING_TREE_SRC_GIVING_TREE_TYPES_H_
-#define GIVING_TREE_SRC_GIVING_TREE_TYPES_H_
+#ifndef SRC_GIVING_TREE_TYPES_H_
+#define SRC_GIVING_TREE_TYPES_H_
 
 #include <funapi/common/types.h>
 #include "giving_tree.h"
@@ -26,4 +26,4 @@ using fun::GivingTreePtrMap;
 namespace protobuf = google::protobuf;
 }  // namespace giving_tree
 
-#endif  // GIVING_TREE_SRC_GIVING_TREE_TYPES_H_
+#endif  // SRC_GIVING_TREE_TYPES_H_

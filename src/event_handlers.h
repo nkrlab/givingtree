@@ -4,8 +4,8 @@
 // must not be used, disclosed, copied, or distributed without the prior
 // consent of Nexon Korea Corporation.
 
-#ifndef GIVING_TREE_SRC_FUNAPI_EVENT_HANDLERS_H_
-#define GIVING_TREE_SRC_FUNAPI_EVENT_HANDLERS_H_
+#ifndef SRC_EVENT_HANDLERS_H_
+#define SRC_EVENT_HANDLERS_H_
 
 #include <funapi/account/account_event_handler_registry.h>
 #include <funapi/account/account.h>
@@ -95,4 +95,4 @@ void GrantApple(const GivingTreePtr &player);
 
 }  // namespace giving_tree
 
-#endif  // GIVING_TREE_SRC_FUNAPI_EVENT_HANDLERS_H_
+#endif  // SRC_EVENT_HANDLERS_H_
