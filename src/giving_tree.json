@@ -7,7 +7,8 @@
         "min" : -9223372036854775807,
         "max" : 9223372036854775807
       },
-      "persistent" : false
+      "persistent" : false,
+      "channels" : []
     },
     "winner_name" : {
       "data_type" : {
@@ -15,7 +16,8 @@
         "default" : "",
         "max_length" : 128
       },
-      "persistent" : false
+      "persistent" : false,
+      "channels" : []
     },
     "players" : {
       "data_type" : {
@@ -23,7 +25,8 @@
         "ownership" : "owner",
         "capacity" : 16
       },
-      "persistent" : false
+      "persistent" : false,
+      "channels" : []
     },
     "name" : {
       "data_type" : {
@@ -31,7 +34,8 @@
         "default" : "(no name)",
         "max_length" : 128
       },
-      "persistent" : true
+      "persistent" : true,
+      "channels" : []
     },
     "apple_count" : {
       "data_type" : {
@@ -40,7 +44,8 @@
         "min" : 0,
         "max" : 99999
       },
-      "persistent" : true
+      "persistent" : true,
+      "channels" : []
     },
     "bet_nanos" : {
       "data_type" : {
@@ -49,7 +54,8 @@
         "min" : -9223372036854775807,
         "max" : 9223372036854775807
       },
-      "persistent" : false
+      "persistent" : false,
+      "channels" : []
     }
   }
 }
