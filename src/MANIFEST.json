@@ -3,13 +3,7 @@
   "components": [
     {
       "name": "GivingTreeServer",
-      "dependency": [
-        "EventDispatcher",
-        "Logging",
-        "Network",
-        "ObjectRegistry",
-        "ObjectAttributeAccess"
-      ]
+      "dependency": []
     }
   ]
 }
