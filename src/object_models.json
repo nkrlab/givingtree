@@ -1,6 +1,28 @@
 {
   "GivingTree" : {
+    "attributes" : {
+      "winner_name" : {
+        "value" : ""
+      },
+      "players" : {
+        "value" : {}
+      },
+      "count_down" : {
+        "value" : 0
+      }
+    }
   },
   "Player" : {
+    "attributes" : {
+      "name" : {
+        "value" : "(none)"
+      },
+      "apple_count" : {
+        "value" : 0
+      },
+      "bet_nanos" : {
+        "value" : 0
+      }
+    }
   }
 }
