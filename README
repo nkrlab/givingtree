@@ -1,0 +1,44 @@
+===============================================================================
+Introduction
+===============================================================================
+This is an example project that illustrates how to use the Nexon Funapi.
+It consists of a client part and a server part. You need to build both of them
+to test.
+
+
+===============================================================================
+How to compile
+===============================================================================
+Server is in C++ and can be built using the standard `configure && make'
+
+$ ./boot.sh
+$ mkdir build
+$ cd build
+$ ../configure
+$ make
+
+
+Client is shipped ready in Python. So you do not have to build.
+
+
+===============================================================================
+How to run
+===============================================================================
+First run the server. After building a server, you can see a file named
+`giving_tree-launcher'. This is a shell script which pre-loads required
+libraries including Funapi. Simply run the script.
+
+$ cd build; ./giving_tree-launcher
+
+
+Next, run the client.
+
+$ cd client; ./giving_tree_client-launcher
+
+
+Once connected with the server, you need to login to test the client.
+Details are explained in a tutorial which is available at the Funapi website.
+
+
+Enjoy the game!
+
