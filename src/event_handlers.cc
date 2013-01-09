@@ -20,8 +20,8 @@
 
 namespace giving_tree {
 
-const string kWorldObjectModelName("GivingTree");
-const string kAccountObjectModelName("Player");
+const char *kWorldObjectModelName = "GivingTree";
+const char *kAccountObjectModelName = "Player";
 
 
 fun::Object::Ptr CreateObject(const string &model) {
@@ -107,8 +107,8 @@ void OnAccountMessage(const fun::Account::Ptr &account,
 
 const int64_t kCountDownStart = 10;
 
-const string kRoomChannelName("room");
-const string kRoomChannelSubId("1");
+const char *kRoomChannelName = "room";
+const char *kRoomChannelSubId = "1";
 
 
 GivingTreePtr the_world;
