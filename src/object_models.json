@@ -20,7 +20,7 @@
       "apple_count" : {
         "value" : 0
       },
-      "bet_nanos" : {
+      "bet_microsec" : {
         "value" : 0
       }
     }

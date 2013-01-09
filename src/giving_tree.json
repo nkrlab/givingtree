@@ -47,7 +47,7 @@
       "persistent" : true,
       "channels" : ["room"]
     },
-    "bet_nanos" : {
+    "bet_microsec" : {
       "data_type" : {
         "base" : "integer",
         "default" : 0,

@@ -41,10 +41,10 @@ fun::Object::Ptr DeserializeObject(const fun::string &serial);
 extern const int64_t kWorldTickMicrosecond;
 
 // server 가 최초 뜰 때만 불린다.
-void OnWorldReady(int64_t now_nanosec);
+void OnWorldReady(int64_t now_microsec);
 
-// server 의 timer 를 통해 지정된 주기(kTickNanosecond)로 불린다.
-void OnWorldTick(int64_t now_nanosec);
+// server 의 timer 를 통해 지정된 주기(kWorldTickMicrosecond)로 불린다.
+void OnWorldTick(int64_t now_microsec);
 
 
 ///////////////////////////////////////////////////////////

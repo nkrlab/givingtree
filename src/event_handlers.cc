@@ -39,14 +39,14 @@ fun::Object::Ptr DeserializeObject(const fun::string &serial) {
 const int64_t kWorldTickMicrosecond = 1000000;  // 1 second.
 
 
-void OnWorldReady(int64_t /*now_nanosec*/) {
+void OnWorldReady(int64_t /*now_microsec*/) {
   the_world = GivingTree::CreateNew(kWorldObjectModelName);
   InitializeWorld();
   the_world->EnterChannel(kRoomChannelName, kRoomChannelSubId);
 }
 
 
-void OnWorldTick(int64_t /*now_nanosec*/) {
+void OnWorldTick(int64_t /*now_microsec*/) {
   TickWorld();
 }
 
@@ -177,11 +177,11 @@ void OnPlayerRegisterName(const GivingTreePtr &player,
 
 void OnPlayerTakeApple(const GivingTreePtr &player,
                        const ::PlayerTakeApple &/*msg*/) {
-  int64_t now_nanosec = fun::api::MonotonicClock::Now();
-  FUN_LOG_INFO << "OnClientTakeApple: [" << player->name() << "]: "
-               << now_nanosec;
+  int64_t now_microsec = fun::MonotonicClock::Now();
+  FUN_LOG_INFO << "OnPlayerTakeApple: [" << player->name() << "]: "
+               << now_microsec;
 
-  player->set_bet_nanos(now_nanosec);
+  player->set_bet_microsec(now_microsec);
 }
 
 
@@ -215,22 +215,22 @@ void ResetPlayerBets(const GivingTreePtrMap &players) {
   BOOST_FOREACH(const GivingTreePtrMap::value_type &element, players) {
     // const string &player_name = element.first;
     GivingTreePtr player = GivingTree::Cast(element.second);
-    player->set_bet_nanos(0);
+    player->set_bet_microsec(0);
   }
 }
 
 
 GivingTreePtr SelectWinner(const GivingTreePtrMap &players) {
   GivingTreePtr winner;
-  int64_t winner_nanos = 0;
+  int64_t winner_microsec = 0;
 
   BOOST_FOREACH(const GivingTreePtrMap::value_type &element, players) {
     // const string &player_name = element.first;
     GivingTreePtr player = GivingTree::Cast(element.second);
-    int64_t bet_nanos = player->bet_nanos();
-    if (bet_nanos > winner_nanos) {
+    int64_t bet_microsec = player->bet_microsec();
+    if (bet_microsec > winner_microsec) {
       winner = player;
-      winner_nanos = bet_nanos;
+      winner_microsec = bet_microsec;
     }
   }
 
