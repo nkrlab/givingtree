@@ -18,6 +18,7 @@ namespace giving_tree {
 
 using fun::string;
 using fun::shared_ptr;
+using fun::Uuid;
 using fun::GivingTree;
 using fun::GivingTreePtr;
 using fun::GivingTreePtrVector;
