@@ -97,13 +97,13 @@ class ChatReader(basic.LineReceiver, funapi_server_stub.CallbackInterface):
 
     else:
       request.type = account_pb.ClientAccountMessage.kClientAppMessage
-      if (cmd != ""):
+      if (cmd == ""):
+        request.app_message.Extensions[app_pb.client_message_type] = \
+            app_pb.ClientAppMessageType.kPlayerTakeApple
+      else:
         request.app_message.Extensions[app_pb.client_message_type] = \
             app_pb.ClientAppMessageType.kPlayerRegisterName
         request.app_message.Extensions[app_pb.player_register_name].name = cmd
-      else:
-        request.app_message.Extensions[app_pb.client_message_type] = \
-            app_pb.ClientAppMessageType.kPlayerTakeApple
 
     self.protocol.write(request.SerializeToString())
 
