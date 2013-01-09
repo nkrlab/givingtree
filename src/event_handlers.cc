@@ -20,16 +20,16 @@
 
 namespace giving_tree {
 
-const fun::string kWorldObjectModelName("GivingTree");
-const fun::string kAccountObjectModelName("Player");
+const string kWorldObjectModelName("GivingTree");
+const string kAccountObjectModelName("Player");
 
 
-fun::Object::Ptr CreateObject(const fun::string &model) {
+fun::Object::Ptr CreateObject(const string &model) {
   return giving_tree::GivingTree::CreateNew(model);
 }
 
 
-fun::Object::Ptr DeserializeObject(const fun::string &serial) {
+fun::Object::Ptr DeserializeObject(const string &serial) {
   fun::BsonArchive::Ptr archive_ptr =
       fun::BsonArchive::CreateFromSerialized(serial);
   return giving_tree::GivingTree::CreateFromSerialized(*archive_ptr);
@@ -107,8 +107,8 @@ void OnAccountMessage(const fun::Account::Ptr &account,
 
 const int64_t kCountDownStart = 10;
 
-const fun::string kRoomChannelName("room");
-const fun::string kRoomChannelSubId("1");
+const string kRoomChannelName("room");
+const string kRoomChannelSubId("1");
 
 
 GivingTreePtr the_world;

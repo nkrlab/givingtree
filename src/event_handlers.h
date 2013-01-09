@@ -25,13 +25,13 @@ namespace giving_tree {
 // object creators.
 
 // world object 용 model 의 이름.
-extern const fun::string kWorldObjectModelName;
+extern const string kWorldObjectModelName;
 
 // account object 용 model 의 이름.
-extern const fun::string kAccountObjectModelName;
+extern const string kAccountObjectModelName;
 
-fun::Object::Ptr CreateObject(const fun::string &model);
-fun::Object::Ptr DeserializeObject(const fun::string &serial);
+fun::Object::Ptr CreateObject(const string &model);
+fun::Object::Ptr DeserializeObject(const string &serial);
 
 
 ///////////////////////////////////////////////////////////
@@ -64,8 +64,8 @@ void OnAccountMessage(const fun::Account::Ptr &account,
 extern const int64_t kCountDownStart;
 
 // room 용 채널의 이름과 서브 아이디.
-extern const fun::string kRoomChannelName;
-extern const fun::string kRoomChannelSubId;
+extern const string kRoomChannelName;
+extern const string kRoomChannelSubId;
 
 // the one and only world object.
 extern GivingTreePtr the_world;
