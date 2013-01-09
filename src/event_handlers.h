@@ -84,6 +84,8 @@ void OnPlayerRegisterName(const GivingTreePtr &player,
                           const ::PlayerRegisterName &msg);
 void OnPlayerTakeApple(const GivingTreePtr &player,
                        const ::PlayerTakeApple &msg);
+void OnPlayerGiveApples(const GivingTreePtr &player,
+                        const ::PlayerGiveApples &msg);
 
 // app sub functions.
 void ResetWorld();
@@ -92,6 +94,8 @@ void DropApple();
 void ResetPlayerBets(const GivingTreePtrMap &players);
 GivingTreePtr SelectWinner(const GivingTreePtrMap &players);
 void GrantApple(const GivingTreePtr &player);
+void GiveApples(const GivingTreePtr &giver, const GivingTreePtr &taker,
+                const int64_t &apple_count);
 
 }  // namespace giving_tree
 

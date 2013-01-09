@@ -13,6 +13,7 @@ message ClientAppMessageType {
   enum Type {
     kPlayerRegisterName = 1001;
     kPlayerTakeApple = 1002;
+    kPlayerGiveApples = 1003;
   }
 }
 
@@ -22,6 +23,7 @@ extend ClientAppMessage {
 
   optional PlayerRegisterName player_register_name = 1001;
   optional PlayerTakeApple player_take_apple = 1002;
+  optional PlayerGiveApples player_give_apples = 1003;
 }
 
 

@@ -100,6 +100,26 @@ class ChatReader(basic.LineReceiver, funapi_server_stub.CallbackInterface):
       if (cmd == ""):
         request.app_message.Extensions[app_pb.client_message_type] = \
             app_pb.ClientAppMessageType.kPlayerTakeApple
+
+      elif (cmd == "give"):
+        if (len(cmds) != 3):
+          print >> sys.stdout, 'error: len(cmds) != 3: %d' % len(cmds)
+          print >> sys.stdout, 'example> give account_id 1'
+          return
+
+        target_id = cmds[1]
+        if (len(target_id) <= 0):
+          print >> sys.stdout, 'error: wrong target account_id.'
+          return
+
+        apple_count = long(cmds[2])
+
+        request.app_message.Extensions[app_pb.client_message_type] = \
+            app_pb.ClientAppMessageType.kPlayerGiveApples
+        give_msg = request.app_message.Extensions[app_pb.player_give_apples]
+        give_msg.target_account_id = target_id
+        give_msg.apple_count = apple_count
+
       else:
         request.app_message.Extensions[app_pb.client_message_type] = \
             app_pb.ClientAppMessageType.kPlayerRegisterName

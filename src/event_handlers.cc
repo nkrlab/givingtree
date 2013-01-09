@@ -7,12 +7,16 @@
 #include "event_handlers.h"
 
 #include <boost/foreach.hpp>
+#include <boost/uuid/uuid_io.hpp>
 #include <funapi/account/account.h>
 #include <funapi/account/multicaster.h>
 #include <funapi/api/clock.h>
+#include <funapi/common/boost_util.h>
 #include <funapi/common/serialization/bson_archive.h>
 #include <funapi/object/object.h>
 #include <funapi/system/logging.h>
+
+#include <algorithm>
 
 #include "giving_tree_types.h"
 #include "giving_tree.h"
@@ -95,6 +99,10 @@ void OnAccountMessage(const fun::Account::Ptr &account,
     }
     case ::ClientAppMessageType::kPlayerTakeApple: {
       OnPlayerTakeApple(player, msg.GetExtension(player_take_apple));
+      break;
+    }
+    case ::ClientAppMessageType::kPlayerGiveApples: {
+      OnPlayerGiveApples(player, msg.GetExtension(player_give_apples));
       break;
     }
     default: {
@@ -185,6 +193,28 @@ void OnPlayerTakeApple(const GivingTreePtr &player,
 }
 
 
+void OnPlayerGiveApples(const GivingTreePtr &player,
+                        const ::PlayerGiveApples &msg) {
+  const string &target_id = msg.target_account_id();
+  const int64_t &apple_count = msg.apple_count();
+
+  FUN_LOG_INFO << "OnPlayerGiveApples: [" << player->name()
+               << "]->[" << target_id
+               << "]: apples[" << apple_count
+               << "].";
+
+  GivingTreePtr target_player =
+      GivingTree::Cast(fun::Account::FindAccountObject(target_id));
+  if (not target_player) {
+    FUN_LOG_INFO << "OnPlayerGiveApples: target player doesn't exist: ["
+                 << target_id << "].";
+    return;
+  }
+
+  GiveApples(player, target_player, apple_count);
+}
+
+
 void ResetWorld() {
   the_world->set_count_down(kCountDownStart);
   ResetPlayerBets(the_world->players());
@@ -242,6 +272,25 @@ void GrantApple(const GivingTreePtr &player) {
   int64_t apple_count = player->apple_count();
   ++apple_count;
   player->set_apple_count(apple_count);
+}
+
+
+void GiveApples(const GivingTreePtr &giver, const GivingTreePtr &taker,
+                const int64_t &apple_count) {
+  int64_t giver_count = giver->apple_count();
+  int64_t taker_count = taker->apple_count();
+  int64_t target_count = std::min(apple_count, giver_count);
+
+  giver_count -= target_count;
+  taker_count += target_count;
+
+  giver->set_apple_count(giver_count);
+  taker->set_apple_count(taker_count);
+
+  FUN_LOG_INFO << "GiveApples: [" << giver->name() << "](" << giver_count
+               << ")->[" << taker->name() << "](" << taker_count
+               << "): apples[" << target_count << " / " << apple_count
+               << "].";
 }
 
 }  // namespace giving_tree
