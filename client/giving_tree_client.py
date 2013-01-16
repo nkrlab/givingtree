@@ -132,6 +132,29 @@ class ChatReader(basic.LineReceiver, funapi_server_stub.CallbackInterface):
         give_msg.target_account_id = target_id
         give_msg.apple_count = apple_count
 
+      elif (cmd == "talk"):
+        if (len(cmds) != 3):
+          print >> sys.stdout, 'error: len(cmds) != 3: %d' % len(cmds)
+          print >> sys.stdout, 'example> talk account_id hello,you'
+          return
+
+        receiver_id = cmds[1]
+        if (len(receiver_id) <= 0):
+          print >> sys.stdout, 'error: wrong receiver account_id.'
+          return
+
+        talk = cmds[2]
+        if (len(talk) <= 0):
+          print >> sys.stdout, 'error: wrong talk.'
+          return
+
+        request.app_message.Extensions[app_pb.client_message_type] = \
+            app_pb.ClientAppMessageType.kAccountSendTalk
+        talk_msg = \
+            request.app_message.Extensions[app_pb.account_send_talk]
+        talk_msg.receiver_account_id = receiver_id
+        talk_msg.talk = talk
+
       else:
         request.app_message.Extensions[app_pb.client_message_type] = \
             app_pb.ClientAppMessageType.kPlayerRegisterName
@@ -167,8 +190,24 @@ class ChatReader(basic.LineReceiver, funapi_server_stub.CallbackInterface):
 
     elif (msg_type == account_pb.ServerAccountMessage.kServerAppMessage):
       app_msg = server_msg.app_message
-      app_msg_type = app_msg.server_message_type
-      print >> sys.stdout, 'AppMessage: Type ' + str(app_msg_type) + '].'
+      app_msg_type = app_msg.Extensions[app_pb.server_message_type]
+      if (app_msg_type == app_pb.ServerAppMessageType.kAccountReceiveTalk):
+        talk_msg = app_msg.Extensions[app_pb.account_receive_talk]
+        sender_id = talk_msg.sender_account_id
+        talk = talk_msg.talk
+        print >> sys.stdout, 'Talk from [' + sender_id + ']: [' + talk + '].\n'
+      elif (app_msg_type == \
+            app_pb.ServerAppMessageType.kAccountSendTalkResponse):
+        response = app_msg.Extensions[app_pb.account_send_talk_response]
+        fail_code = response.fail_code
+        fail_description = response.fail_description
+        if (fail_code == 0):
+          print >> sys.stdout, 'TalkSend: success.\n'
+        else:
+          print >> sys.stdout, 'TalkSend: error: ' + fail_description + '.\n'
+      else:
+        print >> sys.stdout, 'Unknown Message Type ' + str(app_msg_type) \
+                             + '.\n'
 
     elif (msg_type == account_pb.ServerAccountMessage.kAccountLoginResponse):
       login_response = server_msg.login

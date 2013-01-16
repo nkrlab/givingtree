@@ -1,4 +1,10 @@
-message ServerAppDummyMessage {
-  optional int64 dummy = 1;
+message AccountReceiveTalk {
+  optional string sender_account_id = 1;
+  optional string talk = 2;
 }
 
+
+message AccountSendTalkResponse {
+  optional int64 fail_code = 1;
+  optional string fail_description = 2;
+}

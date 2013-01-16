@@ -86,6 +86,8 @@ void OnPlayerTakeApple(const GivingTreePtr &player,
                        const ::PlayerTakeApple &msg);
 void OnPlayerGiveApples(const GivingTreePtr &player,
                         const ::PlayerGiveApples &msg);
+void OnAccountSendTalk(const fun::Account::Ptr &account,
+                       const ::AccountSendTalk &msg);
 
 // app sub functions.
 void ResetWorld();

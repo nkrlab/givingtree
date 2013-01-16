@@ -105,6 +105,10 @@ void OnAccountMessage(const fun::Account::Ptr &account,
       OnPlayerGiveApples(player, msg.GetExtension(player_give_apples));
       break;
     }
+    case ::ClientAppMessageType::kAccountSendTalk: {
+      OnAccountSendTalk(account, msg.GetExtension(account_send_talk));
+      break;
+    }
     default: {
       FUN_LOG_ERR << "Unknown client message type: " << (int64_t) msg_type;
       break;
@@ -212,6 +216,50 @@ void OnPlayerGiveApples(const GivingTreePtr &player,
   }
 
   GiveApples(player, target_player, apple_count);
+}
+
+
+void OnAccountSendTalk(const fun::Account::Ptr &account,
+                       const ::AccountSendTalk &msg) {
+  const string &sender_id = account->account_id();
+  const string &receiver_id = msg.receiver_account_id();
+  const string &talk = msg.talk();
+
+  FUN_LOG_INFO << "OnAccountSendTalk: [" << sender_id
+               << "]->[" << receiver_id
+               << "]: talk[" << talk
+               << "].";
+
+  bool send_result = false;
+  {
+    ::ServerAppMessage app_msg;
+    app_msg.SetExtension(server_message_type,
+                         ::ServerAppMessageType::kAccountReceiveTalk);
+    ::AccountReceiveTalk *talk_msg =
+        app_msg.MutableExtension(account_receive_talk);
+    talk_msg->set_sender_account_id(sender_id);
+    talk_msg->set_talk(talk);
+
+    send_result = fun::Account::SendServerAppMessage(receiver_id, app_msg);
+  }
+
+  {
+    int64_t fail_code = 0;
+    string fail_description("");
+    if (send_result == false) {
+      fail_code = 1;
+      fail_description = "Fail: account not logged in: " + receiver_id;
+    }
+
+    ::ServerAppMessage app_msg;
+    app_msg.SetExtension(server_message_type,
+                         ::ServerAppMessageType::kAccountSendTalkResponse);
+    ::AccountSendTalkResponse *response =
+        app_msg.MutableExtension(account_send_talk_response);
+    response->set_fail_code(fail_code);
+    response->set_fail_description(fail_description);
+    account->SendMessage(app_msg);
+  }
 }
 
 

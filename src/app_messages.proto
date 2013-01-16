@@ -14,6 +14,7 @@ message ClientAppMessageType {
     kPlayerRegisterName = 1001;
     kPlayerTakeApple = 1002;
     kPlayerGiveApples = 1003;
+    kAccountSendTalk = 1004;
   }
 }
 
@@ -24,12 +25,14 @@ extend ClientAppMessage {
   optional PlayerRegisterName player_register_name = 1001;
   optional PlayerTakeApple player_take_apple = 1002;
   optional PlayerGiveApples player_give_apples = 1003;
+  optional AccountSendTalk account_send_talk = 1004;
 }
 
 
 message ServerAppMessageType {
   enum Type {
-    kServerAppDummyMessage = 1001;  // just as a placeholder.
+    kAccountReceiveTalk = 1001;
+    kAccountSendTalkResponse = 1002;
   }
 }
 
@@ -37,7 +40,6 @@ message ServerAppMessageType {
 extend ServerAppMessage {
   optional ServerAppMessageType.Type server_message_type = 1000;
 
-  optional ServerAppDummyMessage dummy = 1001;
+  optional AccountReceiveTalk account_receive_talk = 1001;
+  optional AccountSendTalkResponse account_send_talk_response = 1002;
 }
-
-

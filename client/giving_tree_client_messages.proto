@@ -11,3 +11,9 @@ message PlayerGiveApples {
   optional string target_account_id = 1;
   optional int64 apple_count = 2;
 }
+
+
+message AccountSendTalk {
+  optional string receiver_account_id = 1;
+  optional string talk = 2;
+}
