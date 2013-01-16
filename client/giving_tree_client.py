@@ -17,6 +17,7 @@ import logging
 import os
 import re
 import sys
+import uuid
 
 from twisted.internet import reactor
 from twisted.internet import stdio
@@ -78,22 +79,33 @@ class ChatReader(basic.LineReceiver, funapi_server_stub.CallbackInterface):
     cmds = WHITE_SPACE.split(line.strip())
     cmd = cmds[0]
 
-    if (cmd == "login"):
-      if (len(cmds) != 3):
+    if (cmd == "login" or cmd == "i"):
+      if (len(cmds) < 2):
         print >> sys.stdout, 'error: len(cmds) != 3: %d' % len(cmds)
         print >> sys.stdout, 'example> login id password'
         return
 
       request.type = account_pb.ClientAccountMessage.kAccountLoginRequest
       request.login.account_id = cmds[1]
-      request.login.auth_key = cmds[2]
+      if (len(cmds) < 3):
+        auth_key = ""
+      else:
+        auth_key = cmds[2]
+      request.login.auth_key = auth_key
 
-    elif (cmd == "logout"):
+    elif (cmd == "logout" or cmd == "o"):
       if (len(cmds) != 1):
         print >> sys.stdout, 'error: len(cmds) != 1: %d' % len(cmds)
         print >> sys.stdout, 'example> logout'
         return
       request.type = account_pb.ClientAccountMessage.kAccountLogoutRequest
+
+    elif (cmd == "quit" or cmd == "q"):
+      if (len(cmds) != 1):
+        print >> sys.stdout, 'error: len(cmds) != 1: %d' % len(cmds)
+        print >> sys.stdout, 'example> quit'
+        return
+      reactor.crash()
 
     else:
       request.type = account_pb.ClientAccountMessage.kClientAppMessage
@@ -142,7 +154,37 @@ class ChatReader(basic.LineReceiver, funapi_server_stub.CallbackInterface):
     """funapi_server_stub.EventHandlerInterface"""
     server_msg = account_pb.ServerAccountMessage()
     server_msg.ParseFromString(message)
-    print >> sys.stdout, "Message received: " + str(server_msg)
+    msg_type = server_msg.type
+
+    if (msg_type == account_pb.ServerAccountMessage.kAttributeUpdatesMessage):
+      attribute_updates = server_msg.attribute_updates
+      for attr_update in attribute_updates.attribute_update:
+        obj_uuid = uuid.UUID(bytes = attr_update.object_uuid)
+        print >> sys.stdout, 'AttrUpdate[' + str(obj_uuid)[:8] \
+                             + ']:[' + str(attr_update.attribute_name) \
+                             + ']: [' + str(attr_update.new_json) + '].'
+      print >> sys.stdout, ''
+
+    elif (msg_type == account_pb.ServerAccountMessage.kServerAppMessage):
+      app_msg = server_msg.app_message
+      app_msg_type = app_msg.server_message_type
+      print >> sys.stdout, 'AppMessage: Type ' + str(app_msg_type) + '].'
+
+    elif (msg_type == account_pb.ServerAccountMessage.kAccountLoginResponse):
+      login_response = server_msg.login
+      success = (login_response.fail_code == 0)
+      print >> sys.stdout, 'AccountLoginResponse: ' + str(success) + '.\n'
+
+    elif (msg_type == account_pb.ServerAccountMessage.kAccountLogoutResponse):
+      logout_response = server_msg.logout
+      success = (logout_response.fail_code == 0)
+      print >> sys.stdout, 'AccountLogoutResponse: ' + str(success) + '.\n'
+
+    elif (msg_type == account_pb.ServerAccountMessage.kAccountTimeout):
+      print >> sys.stdout, 'AccountTimeout.\n'
+
+    else:
+      print >> sys.stdout, 'Unknown Message Type: ' + str(msg_type) + '.\n'
 
 
 def main(argv):
