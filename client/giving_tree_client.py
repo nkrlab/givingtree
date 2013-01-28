@@ -87,11 +87,6 @@ class ChatReader(basic.LineReceiver, funapi_server_stub.CallbackInterface):
 
       request.type = account_pb.ClientAccountMessage.kAccountLoginRequest
       request.login.account_id = cmds[1]
-      if (len(cmds) < 3):
-        auth_key = ""
-      else:
-        auth_key = cmds[2]
-      request.login.auth_key = auth_key
 
     elif (cmd == "logout" or cmd == "o"):
       if (len(cmds) != 1):
