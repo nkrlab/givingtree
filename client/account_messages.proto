@@ -6,6 +6,20 @@
 
 
 //////////////////////////////////////////////////////////////////////////////
+// authentication service provider types.
+
+
+message AuthenticationServiceProvider {
+  enum Type {
+    kNone = 0;
+    kLocal = 1;
+    kNexonPlay = 9;
+    kFacebook = 10;
+  }
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
 // account messages from client to server.
 
 
@@ -23,9 +37,30 @@ message ClientAccountMessage {
 }
 
 
+message AuthenticationKey {
+  message Local {
+    optional string auth_info = 1;
+  }
+  optional Local local = 1;
+
+  message NexonPlay {
+    optional string service_token = 1;
+    optional string access_token = 2;
+  }
+  optional NexonPlay nexon_play = 9;
+
+  message Facebook {
+    optional string access_token = 1;
+  }
+  optional Facebook facebook = 10;
+}
+
+
 message AccountLoginRequest {
-  optional string account_id = 1;
-  optional string auth_key = 2;
+  optional AuthenticationServiceProvider.Type auth_service_provider = 1
+      [default = kNone];
+  optional string account_id = 2;
+  optional AuthenticationKey auth_key = 3;
 }
 
 
@@ -48,7 +83,8 @@ message ServerAccountMessage {
     kAccountLogoutResponse = 3;
     kAccountMessageResponse = 4;
     kAccountTimeout = 5;
-    kAttributeUpdatesMessage = 6;
+    kAccountSessionReplaced = 6;
+    kAttributeUpdatesMessage = 14;
     kServerAppMessage = 15;
   }
   optional Type type = 1;
@@ -57,19 +93,29 @@ message ServerAccountMessage {
   optional AccountLogoutResponse logout = 3;
   optional AccountMessageResponse account_message = 4;
   optional AccountTimeout timeout = 5;
-  optional AttributeUpdatesMessage attribute_updates = 6;
+  optional AccountSessionReplaced session_replaced = 6;
+  optional AttributeUpdatesMessage attribute_updates = 14;
   optional ServerAppMessage app_message = 15;
 }
 
 
 message AccountLoginResponse {
-  optional int64 fail_code = 1;
+  enum FailCode {
+    kSuccess = 0;
+    kWrongAuthKey = 1;
+    kPendingAccount = 2;
+  }
+  optional FailCode fail_code = 1;
   optional string fail_description = 2;
 }
 
 
 message AccountLogoutResponse {
-  optional int64 fail_code = 1;
+  enum FailCode {
+    kSuccess = 0;
+    kNotExistingAccount = 1;
+  }
+  optional FailCode fail_code = 1;
   optional string fail_description = 2;
 }
 
@@ -81,6 +127,10 @@ message AccountMessageResponse {
 
 
 message AccountTimeout {
+}
+
+
+message AccountSessionReplaced {
 }
 
 
