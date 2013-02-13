@@ -1,0 +1,12 @@
+{
+  "connection": {
+    "account": "uuid",
+    "when": "datetime"
+  },
+
+  "tick": {
+    "when": "datetime",
+    "world": "uuid",
+    "comment": "string"
+  }
+}

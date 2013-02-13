@@ -18,6 +18,7 @@
 
 #include <algorithm>
 
+#include "activity_log.h"
 #include "giving_tree_types.h"
 #include "giving_tree.h"
 
@@ -52,6 +53,7 @@ void OnWorldReady(int64_t /*now_microsec*/) {
 
 void OnWorldTick(int64_t /*now_microsec*/) {
   TickWorld();
+  logger::Tick(time(NULL), the_world, "Comment containting \" quote and \n newline");
 }
 
 
