@@ -14,7 +14,7 @@
 #include <funapi/common/boost_util.h>
 #include <funapi/common/serialization/bson_archive.h>
 #include <funapi/object/object.h>
-#include <funapi/system/logging.h>
+#include <glog/logging.h>
 
 #include <algorithm>
 
@@ -61,10 +61,10 @@ void OnAccountLogin(const fun::Account::Ptr &account) {
   fun::Multicaster::Get().EnterChannel(kRoomChannelName, kRoomChannelSubId,
                                        account);
 
-  FUN_LOG_INFO << "account login[" << account->account_id()
-               << "] player name[" << player_name
-               << "] apple count[" << player->apple_count()
-               << "]";
+  LOG(INFO) << "account login[" << account->account_id()
+            << "] player name[" << player_name
+            << "] apple count[" << player->apple_count()
+            << "]";
 }
 
 
@@ -75,10 +75,10 @@ void OnAccountLogout(const fun::Account::Ptr &account) {
   fun::Multicaster::Get().LeaveChannel(kRoomChannelName, kRoomChannelSubId,
                                        account);
 
-  FUN_LOG_INFO << "account logout[" << account->account_id()
-               << "] player name[" << player_name
-               << "] apple count[" << player->apple_count()
-               << "]";
+  LOG(INFO) << "account logout[" << account->account_id()
+            << "] player name[" << player_name
+            << "] apple count[" << player->apple_count()
+            << "]";
 }
 
 
@@ -110,7 +110,7 @@ void OnAccountMessage(const fun::Account::Ptr &account,
       break;
     }
     default: {
-      FUN_LOG_ERR << "Unknown client message type: " << (int64_t) msg_type;
+      LOG(ERROR) << "Unknown client message type: " << (int64_t) msg_type;
       break;
     }
   }
@@ -133,12 +133,12 @@ void InitializeWorld() {
 
 void TickWorld() {
   int64_t count_down = CountDown();
-  FUN_LOG_INFO << "TickWorld: CountDown: " << count_down;
+  LOG(INFO) << "TickWorld: CountDown: " << count_down;
 
   if (count_down <= 0) {
     DropApple();
-    FUN_LOG_INFO << "TickWorld: DropApple: winner: ["
-                 << the_world->winner_name() << "]";
+    LOG(INFO) << "TickWorld: DropApple: winner: ["
+              << the_world->winner_name() << "]";
 
     ResetWorld();
   }
@@ -168,8 +168,8 @@ void OnPlayerRegisterName(const GivingTreePtr &player,
                           const ::PlayerRegisterName &msg) {
   const string &new_name = msg.name();
   if (new_name == "(no name)" || new_name == "") {
-    FUN_LOG_INFO << "OnPlayerRegisterName: Fail: invalid player name: ["
-                 << new_name << "]";
+    LOG(INFO) << "OnPlayerRegisterName: Fail: invalid player name: ["
+              << new_name << "]";
     return;
   }
 
@@ -177,21 +177,21 @@ void OnPlayerRegisterName(const GivingTreePtr &player,
   if (new_name != prev_name) {
     ErasePlayer(prev_name);
     player->set_name(new_name);
-    FUN_LOG_INFO << "OnPlayerRegisterName["
-                 << prev_name << "]: ["
-                 << new_name << "]";
+    LOG(INFO) << "OnPlayerRegisterName["
+              << prev_name << "]: ["
+              << new_name << "]";
   }
 
   InsertPlayer(player);
-  FUN_LOG_INFO << "player entered: " << new_name;
+  LOG(INFO) << "player entered: " << new_name;
 }
 
 
 void OnPlayerTakeApple(const GivingTreePtr &player,
                        const ::PlayerTakeApple &/*msg*/) {
   int64_t now_microsec = fun::MonotonicClock::Now();
-  FUN_LOG_INFO << "OnPlayerTakeApple: [" << player->name() << "]: "
-               << now_microsec;
+  LOG(INFO) << "OnPlayerTakeApple: [" << player->name() << "]: "
+            << now_microsec;
 
   player->set_bet_microsec(now_microsec);
 }
@@ -199,19 +199,21 @@ void OnPlayerTakeApple(const GivingTreePtr &player,
 
 void OnPlayerGiveApples(const GivingTreePtr &player,
                         const ::PlayerGiveApples &msg) {
-  const string &target_id = msg.target_account_id();
+  const string &service_provider = msg.target_service_provider();
+  const string &local_account = msg.target_local_account();
+  fun::AccountId target_id(service_provider, local_account);
   const int64_t &apple_count = msg.apple_count();
 
-  FUN_LOG_INFO << "OnPlayerGiveApples: [" << player->name()
-               << "]->[" << target_id
-               << "]: apples[" << apple_count
-               << "].";
+  LOG(INFO) << "OnPlayerGiveApples: [" << player->name()
+            << "]->[" << target_id
+            << "]: apples[" << apple_count
+            << "].";
 
   GivingTreePtr target_player =
       GivingTree::Cast(fun::Account::FindAccountObject(target_id));
   if (not target_player) {
-    FUN_LOG_INFO << "OnPlayerGiveApples: target player doesn't exist: ["
-                 << target_id << "].";
+    LOG(INFO) << "OnPlayerGiveApples: target player doesn't exist: ["
+              << target_id << "].";
     return;
   }
 
@@ -221,14 +223,16 @@ void OnPlayerGiveApples(const GivingTreePtr &player,
 
 void OnAccountSendTalk(const fun::Account::Ptr &account,
                        const ::AccountSendTalk &msg) {
-  const string &sender_id = account->account_id();
-  const string &receiver_id = msg.receiver_account_id();
+  const fun::AccountId &sender_id = account->account_id();
+  const string &service_provider = msg.receiver_service_provider();
+  const string &local_account = msg.receiver_local_account();
+  fun::AccountId receiver_id(service_provider, local_account);
   const string &talk = msg.talk();
 
-  FUN_LOG_INFO << "OnAccountSendTalk: [" << sender_id
-               << "]->[" << receiver_id
-               << "]: talk[" << talk
-               << "].";
+  LOG(INFO) << "OnAccountSendTalk: [" << sender_id
+            << "]->[" << receiver_id
+            << "]: talk[" << talk
+            << "].";
 
   bool send_result = false;
   {
@@ -237,7 +241,8 @@ void OnAccountSendTalk(const fun::Account::Ptr &account,
                          ::ServerAppMessageType::kAccountReceiveTalk);
     ::AccountReceiveTalk *talk_msg =
         app_msg.MutableExtension(account_receive_talk);
-    talk_msg->set_sender_account_id(sender_id);
+    talk_msg->set_sender_service_provider(sender_id.service_provider());
+    talk_msg->set_sender_local_account(sender_id.local_account());
     talk_msg->set_talk(talk);
 
     send_result = fun::Account::SendServerAppMessage(receiver_id, app_msg);
@@ -248,7 +253,8 @@ void OnAccountSendTalk(const fun::Account::Ptr &account,
     string fail_description("");
     if (send_result == false) {
       fail_code = 1;
-      fail_description = "Fail: account not logged in: " + receiver_id;
+      fail_description = "Fail: account not logged in: " +
+                         receiver_id.ToString();
     }
 
     ::ServerAppMessage app_msg;
@@ -335,10 +341,10 @@ void GiveApples(const GivingTreePtr &giver, const GivingTreePtr &taker,
   giver->set_apple_count(giver_count);
   taker->set_apple_count(taker_count);
 
-  FUN_LOG_INFO << "GiveApples: [" << giver->name() << "](" << giver_count
-               << ")->[" << taker->name() << "](" << taker_count
-               << "): apples[" << target_count << " / " << apple_count
-               << "].";
+  LOG(INFO) << "GiveApples: [" << giver->name() << "](" << giver_count
+            << ")->[" << taker->name() << "](" << taker_count
+            << "): apples[" << target_count << " / " << apple_count
+            << "].";
 }
 
 }  // namespace giving_tree

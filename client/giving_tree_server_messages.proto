@@ -1,6 +1,7 @@
 message AccountReceiveTalk {
-  optional string sender_account_id = 1;
-  optional string talk = 2;
+  optional string sender_service_provider = 1;
+  optional string sender_local_account = 2;
+  optional string talk = 3;
 }
 
 

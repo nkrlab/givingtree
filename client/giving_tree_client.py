@@ -86,7 +86,8 @@ class ChatReader(basic.LineReceiver, funapi_server_stub.CallbackInterface):
         return
 
       request.type = account_pb.ClientAccountMessage.kAccountLoginRequest
-      request.login.account_id = cmds[1]
+      request.login.authentication_service_provider = "free"
+      request.login.local_account = cmds[1]
 
     elif (cmd == "logout" or cmd == "o"):
       if (len(cmds) != 1):
@@ -124,7 +125,8 @@ class ChatReader(basic.LineReceiver, funapi_server_stub.CallbackInterface):
         request.app_message.Extensions[app_pb.client_message_type] = \
             app_pb.ClientAppMessageType.kPlayerGiveApples
         give_msg = request.app_message.Extensions[app_pb.player_give_apples]
-        give_msg.target_account_id = target_id
+        give_msg.target_service_provider = "free"
+        give_msg.target_local_account = target_id
         give_msg.apple_count = apple_count
 
       elif (cmd == "talk"):
@@ -147,7 +149,8 @@ class ChatReader(basic.LineReceiver, funapi_server_stub.CallbackInterface):
             app_pb.ClientAppMessageType.kAccountSendTalk
         talk_msg = \
             request.app_message.Extensions[app_pb.account_send_talk]
-        talk_msg.receiver_account_id = receiver_id
+        talk_msg.receiver_service_provider = "free"
+        talk_msg.receiver_local_account = receiver_id
         talk_msg.talk = talk
 
       else:

@@ -6,20 +6,6 @@
 
 
 //////////////////////////////////////////////////////////////////////////////
-// authentication service provider types.
-
-
-message AuthenticationServiceProvider {
-  enum Type {
-    kNone = 0;
-    kLocal = 1;
-    kNexonPlay = 9;
-    kFacebook = 10;
-  }
-}
-
-
-//////////////////////////////////////////////////////////////////////////////
 // account messages from client to server.
 
 
@@ -37,30 +23,11 @@ message ClientAccountMessage {
 }
 
 
-message AuthenticationKey {
-  message Local {
-    optional string auth_info = 1;
-  }
-  optional Local local = 1;
-
-  message NexonPlay {
-    optional string service_token = 1;
-    optional string access_token = 2;
-  }
-  optional NexonPlay nexon_play = 9;
-
-  message Facebook {
-    optional string access_token = 1;
-  }
-  optional Facebook facebook = 10;
-}
-
-
 message AccountLoginRequest {
-  optional AuthenticationServiceProvider.Type auth_service_provider = 1
-      [default = kNone];
-  optional string account_id = 2;
-  optional AuthenticationKey auth_key = 3;
+  optional string authentication_service_provider = 1
+      [default = "free"];
+  optional string local_account = 2;
+  optional string authentication_key = 3;
 }
 
 
@@ -102,8 +69,9 @@ message ServerAccountMessage {
 message AccountLoginResponse {
   enum FailCode {
     kSuccess = 0;
-    kWrongAuthKey = 1;
-    kPendingAccount = 2;
+    kPendingAccount = 1;
+    kServiceProviderNotAvailable = 2;
+    kWrongAuthKey = 3;
   }
   optional FailCode fail_code = 1;
   optional string fail_description = 2;
