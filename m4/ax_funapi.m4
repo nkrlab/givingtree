@@ -100,7 +100,8 @@ if test "x$want_funapi" = "xyes"; then
 
   FUNAPI_LIBS=
   FUNAPI_LD_PRELOAD=
-  for ac_funapi_lib_tmp in `ls $FUNAPI_LIBDIR/*.so`; do
+  for ac_funapi_lib_tmp in 'libfunapi_api.so' 'libfunapi_system.so' 'libfunapi_common.so' 'libfunapi_db_client.so' 'libfunapi_framework.so' 'libfunapi_rpc.so'; do
+    ac_funapi_lib_tmp=$FUNAPI_LIBDIR/$ac_funapi_lib_tmp
     nm --dynamic `readlink -f $ac_funapi_lib_tmp` | grep -q main > /dev/null 2> /dev/null
     if test $? -eq 1; then
       ac_funapi_lib_basename_tmp=`basename $ac_funapi_lib_tmp`
