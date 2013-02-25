@@ -68,6 +68,7 @@ class ChatReader(basic.LineReceiver, funapi_server_stub.CallbackInterface):
   def connection_failed(self, err):
     """Defer errback"""
     print >> sys.stdout, 'Cannot make a connection: %s' % str(err)
+    sys.stdout.flush()
     # pylint: disable-msg=E1101
     reactor.crash()
 
@@ -83,6 +84,7 @@ class ChatReader(basic.LineReceiver, funapi_server_stub.CallbackInterface):
       if (len(cmds) < 2):
         print >> sys.stdout, 'error: len(cmds) != 3: %d' % len(cmds)
         print >> sys.stdout, 'example> login id password'
+        sys.stdout.flush()
         return
 
       request.type = account_pb.ClientAccountMessage.kAccountLoginRequest
@@ -93,6 +95,7 @@ class ChatReader(basic.LineReceiver, funapi_server_stub.CallbackInterface):
       if (len(cmds) != 1):
         print >> sys.stdout, 'error: len(cmds) != 1: %d' % len(cmds)
         print >> sys.stdout, 'example> logout'
+        sys.stdout.flush()
         return
       request.type = account_pb.ClientAccountMessage.kAccountLogoutRequest
 
@@ -100,6 +103,7 @@ class ChatReader(basic.LineReceiver, funapi_server_stub.CallbackInterface):
       if (len(cmds) != 1):
         print >> sys.stdout, 'error: len(cmds) != 1: %d' % len(cmds)
         print >> sys.stdout, 'example> quit'
+        sys.stdout.flush()
         return
       reactor.crash()
 
@@ -113,11 +117,13 @@ class ChatReader(basic.LineReceiver, funapi_server_stub.CallbackInterface):
         if (len(cmds) != 3):
           print >> sys.stdout, 'error: len(cmds) != 3: %d' % len(cmds)
           print >> sys.stdout, 'example> give account_id 1'
+          sys.stdout.flush()
           return
 
         target_id = cmds[1]
         if (len(target_id) <= 0):
           print >> sys.stdout, 'error: wrong target account_id.'
+          sys.stdout.flush()
           return
 
         apple_count = long(cmds[2])
@@ -133,16 +139,19 @@ class ChatReader(basic.LineReceiver, funapi_server_stub.CallbackInterface):
         if (len(cmds) != 3):
           print >> sys.stdout, 'error: len(cmds) != 3: %d' % len(cmds)
           print >> sys.stdout, 'example> talk account_id hello,you'
+          sys.stdout.flush()
           return
 
         receiver_id = cmds[1]
         if (len(receiver_id) <= 0):
           print >> sys.stdout, 'error: wrong receiver account_id.'
+          sys.stdout.flush()
           return
 
         talk = cmds[2]
         if (len(talk) <= 0):
           print >> sys.stdout, 'error: wrong talk.'
+          sys.stdout.flush()
           return
 
         request.app_message.Extensions[app_pb.client_message_type] = \
@@ -184,7 +193,9 @@ class ChatReader(basic.LineReceiver, funapi_server_stub.CallbackInterface):
         print >> sys.stdout, 'AttrUpdate[' + str(obj_uuid)[:8] \
                              + ']:[' + str(attr_update.attribute_name) \
                              + ']: [' + str(attr_update.new_json) + '].'
+        sys.stdout.flush()
       print >> sys.stdout, ''
+      sys.stdout.flush()
 
     elif (msg_type == account_pb.ServerAccountMessage.kServerAppMessage):
       app_msg = server_msg.app_message
@@ -196,6 +207,7 @@ class ChatReader(basic.LineReceiver, funapi_server_stub.CallbackInterface):
         talk = talk_msg.talk
         sender = sender_service_provider + ':' + sender_local_account
         print >> sys.stdout, 'Talk from [' + sender + ']: [' + talk + '].\n'
+        sys.stdout.flush()
       elif (app_msg_type == \
             app_pb.ServerAppMessageType.kAccountSendTalkResponse):
         response = app_msg.Extensions[app_pb.account_send_talk_response]
@@ -203,28 +215,34 @@ class ChatReader(basic.LineReceiver, funapi_server_stub.CallbackInterface):
         fail_description = response.fail_description
         if (fail_code == 0):
           print >> sys.stdout, 'TalkSend: success.\n'
+          sys.stdout.flush()
         else:
           print >> sys.stdout, 'TalkSend: error: ' + fail_description + '.\n'
+          sys.stdout.flush()
       else:
         print >> sys.stdout, 'Unknown Message Type ' + str(app_msg_type) \
                              + '.\n'
+        sys.stdout.flush()
 
     elif (msg_type == account_pb.ServerAccountMessage.kAccountLoginResponse):
       login_response = server_msg.login
       success = (login_response.fail_code == 0)
       print >> sys.stdout, 'AccountLoginResponse: ' + str(success) + '.\n'
+      sys.stdout.flush()
 
     elif (msg_type == account_pb.ServerAccountMessage.kAccountLogoutResponse):
       logout_response = server_msg.logout
       success = (logout_response.fail_code == 0)
       print >> sys.stdout, 'AccountLogoutResponse: ' + str(success) + '.\n'
+      sys.stdout.flush()
 
     elif (msg_type == account_pb.ServerAccountMessage.kAccountTimeout):
       print >> sys.stdout, 'AccountTimeout.\n'
+      sys.stdout.flush()
 
     else:
       print >> sys.stdout, 'Unknown Message Type: ' + str(msg_type) + '.\n'
-
+      sys.stdout.flush()
 
 def main(argv):
   """Main function"""
