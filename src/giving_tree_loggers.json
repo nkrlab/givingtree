@@ -46,5 +46,11 @@
     "sender_account": "string",
     "receiver_account": "string",
     "talk": "string"
+  },
+  "SuperAccountGiveApples": {
+    "supper_account": "string",
+    "target_name": "string",
+    "apple_count": "integer",
+    "result_count": "integer"
   }
 }

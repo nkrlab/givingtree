@@ -53,6 +53,10 @@ void OnWorldTick(int64_t now_microsec);
 void OnAccountLogin(const fun::Account::Ptr &account);
 void OnAccountLogout(const fun::Account::Ptr &account);
 void OnAccountTimeout(const fun::Account::Ptr &account);
+void OnSuperAccountRequest(const fun::Account::Ptr &account,
+                           const fun::Uuid &request_uuid,
+                           const string &command,
+                           const json_spirit::mObject &parameters);
 void OnAccountMessage(const fun::Account::Ptr &account,
                       const ::ClientAppMessage &msg);
 

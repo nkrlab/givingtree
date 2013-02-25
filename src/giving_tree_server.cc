@@ -35,6 +35,7 @@ class GivingTreeServerInstaller : public fun::framework::Installer {
         giving_tree::OnAccountLogin,
         giving_tree::OnAccountLogout,
         giving_tree::OnAccountTimeout,
+        giving_tree::OnSuperAccountRequest,
         giving_tree::OnAccountMessage);
 
     return true;

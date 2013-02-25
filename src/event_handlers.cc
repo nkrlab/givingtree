@@ -86,6 +86,43 @@ void OnAccountTimeout(const fun::Account::Ptr &account) {
 }
 
 
+void OnSuperAccountRequest(const fun::Account::Ptr &account,
+                           const fun::Uuid &request_uuid,
+                           const string &command,
+                           const json_spirit::mObject &parameters) {
+  if (command == "GiveApples") {
+    json_spirit::mObject::const_iterator i;
+    string player_name;
+    i = parameters.find("player_name");
+    if (i != parameters.end()) {
+      player_name = i->second.get_str();
+    }
+    int64_t apple_count = 0;
+    i = parameters.find("apple_count");
+    if (i != parameters.end()) {
+      apple_count = i->second.get_int();
+    }
+
+    GivingTreePtr player = FindPlayer(player_name);
+    if (player) {
+      int64_t sum_count = player->apple_count() + apple_count;
+      player->set_apple_count(sum_count);
+
+      logger::SuperAccountGiveApples(account->account_id().ToString(),
+                                     player_name,
+                                     apple_count,
+                                     sum_count);
+
+      json_spirit::Object result;
+      result.push_back(json_spirit::Pair("sum_count", sum_count));
+      account->RespondSuperAccount(request_uuid, result);
+    } else {
+      account->RespondSuperAccount(request_uuid, 1, "player does not exist: ");
+    }
+  }
+}
+
+
 void OnAccountMessage(const fun::Account::Ptr &account,
                       const ::ClientAppMessage &msg) {
   GivingTreePtr player = GivingTree::Cast(account->object());
