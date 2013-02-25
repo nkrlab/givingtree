@@ -53,7 +53,6 @@ void OnWorldReady(int64_t /*now_microsec*/) {
 
 void OnWorldTick(int64_t /*now_microsec*/) {
   TickWorld();
-  logger::Tick(time(NULL), the_world, "Comment containting \" quote and \n newline");
 }
 
 
@@ -63,10 +62,9 @@ void OnAccountLogin(const fun::Account::Ptr &account) {
   fun::Multicaster::Get().EnterChannel(kRoomChannelName, kRoomChannelSubId,
                                        account);
 
-  LOG(INFO) << "account login[" << account->account_id()
-            << "] player name[" << player_name
-            << "] apple count[" << player->apple_count()
-            << "]";
+  logger::AccountLoginApp(account->account_id().ToString(),
+                          player_name,
+                          player->apple_count());
 }
 
 
@@ -77,10 +75,9 @@ void OnAccountLogout(const fun::Account::Ptr &account) {
   fun::Multicaster::Get().LeaveChannel(kRoomChannelName, kRoomChannelSubId,
                                        account);
 
-  LOG(INFO) << "account logout[" << account->account_id()
-            << "] player name[" << player_name
-            << "] apple count[" << player->apple_count()
-            << "]";
+  logger::AccountLogoutApp(account->account_id().ToString(),
+                           player_name,
+                           player->apple_count());
 }
 
 
@@ -135,12 +132,12 @@ void InitializeWorld() {
 
 void TickWorld() {
   int64_t count_down = CountDown();
-  LOG(INFO) << "TickWorld: CountDown: " << count_down;
+  logger::WorldTick(the_world, count_down, time(NULL),
+                    "Comment containing \" quote and \n newline");
 
   if (count_down <= 0) {
     DropApple();
-    LOG(INFO) << "TickWorld: DropApple: winner: ["
-              << the_world->winner_name() << "]";
+    logger::WorldDropApple(the_world->winner_name());
 
     ResetWorld();
   }
@@ -179,21 +176,18 @@ void OnPlayerRegisterName(const GivingTreePtr &player,
   if (new_name != prev_name) {
     ErasePlayer(prev_name);
     player->set_name(new_name);
-    LOG(INFO) << "OnPlayerRegisterName["
-              << prev_name << "]: ["
-              << new_name << "]";
+    logger::PlayerRegisterName(prev_name, new_name);
   }
 
   InsertPlayer(player);
-  LOG(INFO) << "player entered: " << new_name;
+  logger::PlayerEnterInWorld(new_name);
 }
 
 
 void OnPlayerTakeApple(const GivingTreePtr &player,
                        const ::PlayerTakeApple &/*msg*/) {
   int64_t now_microsec = fun::MonotonicClock::Now();
-  LOG(INFO) << "OnPlayerTakeApple: [" << player->name() << "]: "
-            << now_microsec;
+  logger::PlayerTakeApple(player->name(), now_microsec);
 
   player->set_bet_microsec(now_microsec);
 }
@@ -206,10 +200,9 @@ void OnPlayerGiveApples(const GivingTreePtr &player,
   fun::AccountId target_id(service_provider, local_account);
   const int64_t &apple_count = msg.apple_count();
 
-  LOG(INFO) << "OnPlayerGiveApples: [" << player->name()
-            << "]->[" << target_id
-            << "]: apples[" << apple_count
-            << "].";
+  logger::PlayerTryGivingApples(player->name(),
+                                target_id.ToString(),
+                                apple_count);
 
   GivingTreePtr target_player =
       GivingTree::Cast(fun::Account::FindAccountObject(target_id));
@@ -231,10 +224,9 @@ void OnAccountSendTalk(const fun::Account::Ptr &account,
   fun::AccountId receiver_id(service_provider, local_account);
   const string &talk = msg.talk();
 
-  LOG(INFO) << "OnAccountSendTalk: [" << sender_id
-            << "]->[" << receiver_id
-            << "]: talk[" << talk
-            << "].";
+  logger::AccountSendTalk(sender_id.ToString(),
+                          receiver_id.ToString(),
+                          talk);
 
   bool send_result = false;
   {
@@ -343,10 +335,9 @@ void GiveApples(const GivingTreePtr &giver, const GivingTreePtr &taker,
   giver->set_apple_count(giver_count);
   taker->set_apple_count(taker_count);
 
-  LOG(INFO) << "GiveApples: [" << giver->name() << "](" << giver_count
-            << ")->[" << taker->name() << "](" << taker_count
-            << "): apples[" << target_count << " / " << apple_count
-            << "].";
+  logger::PlayerFinishGivingApples(giver->name(), giver_count,
+                                   taker->name(), taker_count,
+                                   target_count, apple_count);
 }
 
 }  // namespace giving_tree

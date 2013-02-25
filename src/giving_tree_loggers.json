@@ -1,12 +1,50 @@
 {
-  "Connection": {
-    "account": "uuid",
-    "when": "datetime"
-  },
-
-  "Tick": {
-    "when": "datetime",
+  "WorldTick": {
     "world": "uuid",
+    "count_down": "integer",
+    "when": "datetime",
     "comment": "string"
+  },
+  "WorldDropApple": {
+    "winner_name": "string"
+  },
+  "AccountLoginApp": {
+    "local_account": "string",
+    "player_name": "string",
+    "apple_count": "integer"
+  },
+  "AccountLogoutApp": {
+    "local_account": "string",
+    "player_name": "string",
+    "apple_count": "integer"
+  },
+  "PlayerRegisterName": {
+    "prev_name": "string",
+    "new_name": "string"
+  },
+  "PlayerEnterInWorld": {
+    "player_name": "string"
+  },
+  "PlayerTakeApple": {
+    "player_name": "string",
+    "clock_microsec": "integer"
+  },
+  "PlayerTryGivingApples": {
+    "player_name": "string",
+    "target_account": "string",
+    "apple_count": "integer"
+  },
+  "PlayerFinishGivingApples": {
+    "giver_name": "string",
+    "giver_count": "integer",
+    "taker_name": "string",
+    "taker_count": "integer",
+    "try_count": "integer",
+    "finish_count": "integer"
+  },
+  "AccountSendTalk": {
+    "sender_account": "string",
+    "receiver_account": "string",
+    "talk": "string"
   }
 }
