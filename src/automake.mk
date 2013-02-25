@@ -115,7 +115,7 @@ giving_tree_SOURCES = \
 
 # library 를 만들기 위해서 필요한 생성되는 file 들.
 nodist_giving_tree_SOURCES = \
-  $(top_builddir)/src/activity_log.h \
+  $(top_builddir)/src/giving_tree_loggers.h \
   $(top_builddir)/src/app_messages.pb.cc \
   $(top_builddir)/src/app_messages.pb.h \
   $(top_builddir)/src/giving_tree_client_messages.pb.cc \
@@ -142,12 +142,13 @@ giving_tree_LDADD = \
 
 
 # Activity log function 생성
-$(top_builddir)/src/activity_log.h: $(top_srcdir)/src/activity_log.json
+$(top_builddir)/src/giving_tree_loggers.h: \
+$(top_srcdir)/src/giving_tree_loggers.json
 	@$(MKDIR_P) $(top_builddir)/src
 	$(FUNAPI_BINDIR)/activity_logger_generator.py \
   --output_file=$@ --definition_file=$<
 
-BUILT_SOURCES += $(top_builddir)/src/activity_log.h
+BUILT_SOURCES += $(top_builddir)/src/giving_tree_loggers.h
 
 
 # Object class 를 생성.

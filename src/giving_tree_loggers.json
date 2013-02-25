@@ -1,10 +1,10 @@
 {
-  "connection": {
+  "Connection": {
     "account": "uuid",
     "when": "datetime"
   },
 
-  "tick": {
+  "Tick": {
     "when": "datetime",
     "world": "uuid",
     "comment": "string"

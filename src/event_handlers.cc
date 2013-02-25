@@ -18,7 +18,7 @@
 
 #include <algorithm>
 
-#include "activity_log.h"
+#include "giving_tree_loggers.h"
 #include "giving_tree_types.h"
 #include "giving_tree.h"
 
