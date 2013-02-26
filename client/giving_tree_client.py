@@ -191,9 +191,11 @@ class ChatReader(basic.LineReceiver, funapi_server_stub.CallbackInterface):
       app_msg_type = app_msg.Extensions[app_pb.server_message_type]
       if (app_msg_type == app_pb.ServerAppMessageType.kAccountReceiveTalk):
         talk_msg = app_msg.Extensions[app_pb.account_receive_talk]
-        sender_id = talk_msg.sender_account_id
+        sender_service_provider = talk_msg.sender_service_provider
+        sender_local_account = talk_msg.sender_local_account
         talk = talk_msg.talk
-        print >> sys.stdout, 'Talk from [' + sender_id + ']: [' + talk + '].\n'
+        sender = sender_service_provider + ':' + sender_local_account
+        print >> sys.stdout, 'Talk from [' + sender + ']: [' + talk + '].\n'
       elif (app_msg_type == \
             app_pb.ServerAppMessageType.kAccountSendTalkResponse):
         response = app_msg.Extensions[app_pb.account_send_talk_response]
