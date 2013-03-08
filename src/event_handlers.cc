@@ -90,6 +90,9 @@ void OnSuperAccountRequest(const fun::Account::Ptr &account,
                            const fun::Uuid &request_uuid,
                            const string &command,
                            const json_spirit::mObject &parameters) {
+  DLOG(INFO) << "OnSuperAccountRequest: " << account->account_id()
+             << ": " << command << json_spirit::write(parameters);
+
   if (command == "GiveApples") {
     json_spirit::mObject::const_iterator i;
     string player_name;
@@ -117,8 +120,12 @@ void OnSuperAccountRequest(const fun::Account::Ptr &account,
       result.push_back(json_spirit::Pair("sum_count", sum_count));
       account->RespondSuperAccount(request_uuid, result);
     } else {
-      account->RespondSuperAccount(request_uuid, 1, "player does not exist: ");
+      account->RespondSuperAccount(request_uuid, 101,
+          "GiveApples: player does not exist: " + player_name);
     }
+  } else {
+    account->RespondSuperAccount(request_uuid, 1,
+        "unknown command: " + command);
   }
 }
 
