@@ -13,12 +13,14 @@ message ClientAccountMessage {
   enum Type {
     kAccountLoginRequest = 2;
     kAccountLogoutRequest = 3;
+    kSuperAccountRequest = 13;
     kClientAppMessage = 15;
   }
   optional Type type = 1;
 
   optional AccountLoginRequest login = 2;
   optional AccountLogoutRequest logout = 3;
+  optional SuperAccountRequest super_request = 13;
   optional ClientAppMessage app_message = 15;
 }
 
@@ -32,6 +34,13 @@ message AccountLoginRequest {
 
 
 message AccountLogoutRequest {
+}
+
+
+message SuperAccountRequest {
+  optional bytes request_uuid = 1;
+  optional string command = 2;
+  optional string parameters_json = 3;
 }
 
 
@@ -51,6 +60,7 @@ message ServerAccountMessage {
     kAccountMessageResponse = 4;
     kAccountTimeout = 5;
     kAccountSessionReplaced = 6;
+    kSuperAccountResponse = 13;
     kAttributeUpdatesMessage = 14;
     kServerAppMessage = 15;
   }
@@ -61,6 +71,7 @@ message ServerAccountMessage {
   optional AccountMessageResponse account_message = 4;
   optional AccountTimeout timeout = 5;
   optional AccountSessionReplaced session_replaced = 6;
+  optional SuperAccountResponse super_response = 13;
   optional AttributeUpdatesMessage attribute_updates = 14;
   optional ServerAppMessage app_message = 15;
 }
@@ -99,6 +110,14 @@ message AccountTimeout {
 
 
 message AccountSessionReplaced {
+}
+
+
+message SuperAccountResponse {
+  optional bytes request_uuid = 1;
+  optional int64 result_code = 2;
+  optional string result_description = 3;
+  optional string result_json = 4;
 }
 
 
