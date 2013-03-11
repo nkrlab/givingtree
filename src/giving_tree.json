@@ -28,6 +28,15 @@
       "persistent" : false,
       "channels" : ["room"]
     },
+    "local_account" : {
+      "data_type" : {
+        "base" : "string",
+        "default" : "",
+        "max_length" : 128
+      },
+      "persistent" : false,
+      "channels" : ["room"]
+    },
     "name" : {
       "data_type" : {
         "base" : "string",

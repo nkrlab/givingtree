@@ -1,4 +1,28 @@
 {
+  "CharacterItemHistory": {
+    "AccountID": "string",
+    "ServerCode": "string",
+    "CharacterName": "string",
+    "UseType": "integer",
+    "Method": "integer",
+    "Recipient": "string",
+    "Sender": "string",
+    "ItemName": "string",
+    "ItemNumber": "string",
+    "Count": "integer",
+    "BeforeCount": "integer",
+    "AfterCount": "integer",
+    "Location": "string"
+  },
+  "ItemHistoryList": {
+    "ItemNumber": "string",
+    "ItemName": "string",
+    "Count": "integer",
+    "Sender": "string",
+    "SenderMethod": "string",
+    "Recipient": "string",
+    "ReceiveMethod": "string"
+  },
   "WorldTick": {
     "world": "uuid",
     "count_down": "integer",

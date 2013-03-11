@@ -59,6 +59,7 @@ void OnWorldTick(int64_t /*now_microsec*/) {
 void OnAccountLogin(const fun::Account::Ptr &account) {
   GivingTreePtr player = GivingTree::Cast(account->object());
   const string &player_name = player->name();
+  player->set_local_account(account->account_id().local_account());
   fun::Multicaster::Get().EnterChannel(kRoomChannelName, kRoomChannelSubId,
                                        account);
 
@@ -115,6 +116,21 @@ void OnSuperAccountRequest(const fun::Account::Ptr &account,
                                      player_name,
                                      apple_count,
                                      sum_count);
+
+      logger::CharacterItemHistory(
+          player->local_account(),
+          "0",
+          player->name(),
+          1,
+          4,
+          player->name(),
+          "(supper command)" + account->account_id().local_account(),
+          "GoldenApple",
+          "10001",
+          apple_count,
+          sum_count - apple_count,
+          player->apple_count(),
+          "SuperCommand");
 
       json_spirit::Object result;
       result.push_back(json_spirit::Pair("sum_count", sum_count));
@@ -364,6 +380,21 @@ void GrantApple(const GivingTreePtr &player) {
   int64_t apple_count = player->apple_count();
   ++apple_count;
   player->set_apple_count(apple_count);
+
+  logger::CharacterItemHistory(
+      player->local_account(),
+      "0",
+      player->name(),
+      1,
+      4,
+      player->name(),
+      "(the giving-tree)",
+      "GoldenApple",
+      "10001",
+      1,
+      apple_count - 1,
+      player->apple_count(),
+      "UnderTheGivingTree");
 }
 
 
@@ -382,6 +413,48 @@ void GiveApples(const GivingTreePtr &giver, const GivingTreePtr &taker,
   logger::PlayerFinishGivingApples(giver->name(), giver_count,
                                    taker->name(), taker_count,
                                    target_count, apple_count);
+
+  // for giver.
+  logger::CharacterItemHistory(
+      giver->local_account(),
+      "0",
+      giver->name(),
+      2,
+      3,
+      taker->name(),
+      giver->name(),
+      "GoldenApple",
+      "10001",
+      target_count,
+      giver_count + target_count,
+      giver->apple_count(),
+      "Market");
+
+  // for taker.
+  logger::CharacterItemHistory(
+      taker->local_account(),
+      "0",
+      taker->name(),
+      1,
+      3,
+      taker->name(),
+      giver->name(),
+      "GoldenApple",
+      "10001",
+      target_count,
+      taker_count - target_count,
+      taker->apple_count(),
+      "Market");
+
+  // for item.
+  logger::ItemHistoryList(
+      "10001",
+      "GoldenApple",
+      target_count,
+      giver->name(),
+      "GiveApples",
+      taker->name(),
+      "TakeApples");
 }
 
 }  // namespace giving_tree
