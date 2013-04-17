@@ -81,15 +81,20 @@ class ChatReader(basic.LineReceiver, funapi_server_stub.CallbackInterface):
     cmd = cmds[0]
 
     if (cmd == "login" or cmd == "i"):
-      if (len(cmds) < 2):
-        print >> sys.stdout, 'error: len(cmds) != 3: %d' % len(cmds)
-        print >> sys.stdout, 'example> login id password'
+      if (len(cmds) == 2):
+        request.login.authentication_service_provider = "free"
+        request.login.local_account = cmds[1]
+      elif (len(cmds) == 4):
+        request.login.authentication_service_provider = cmds[1]
+        request.login.local_account = cmds[2]
+        request.login.authentication_key = cmds[3]
+      else:
+        print >> sys.stdout, 'error: len(cmds) != 2 and != 4 : %d' % len(cmds)
+        print >> sys.stdout, 'example> login id'
+        print >> sys.stdout, 'example> login service-provider id key'
         sys.stdout.flush()
         return
-
       request.type = account_pb.ClientAccountMessage.kAccountLoginRequest
-      request.login.authentication_service_provider = "free"
-      request.login.local_account = cmds[1]
 
     elif (cmd == "logout" or cmd == "o"):
       if (len(cmds) != 1):
