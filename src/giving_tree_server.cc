@@ -6,8 +6,8 @@
 
 #include <boost/bind.hpp>
 #include <funapi/account/account_event_handler_registry.h>
-#include <funapi/account/object_creator_registry.h>
 #include <funapi/api/tick/world_event_handler_registry.h>
+#include <funapi/object/object_creator_registry.h>
 #include <funapi/framework/installer.h>
 
 #include <utility>
@@ -22,6 +22,8 @@ class GivingTreeServerInstaller : public fun::framework::Installer {
   virtual bool Install(
       const fun::framework::Installer::ArgumentMap &/*arguments*/) {
     fun::ObjectCreatorRegistry::Install(
+        boost::bind(giving_tree::CreateObject,
+                    giving_tree::kWorldObjectModelName),
         boost::bind(giving_tree::CreateObject,
                     giving_tree::kAccountObjectModelName),
         giving_tree::DeserializeObject);

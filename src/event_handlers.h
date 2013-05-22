@@ -9,8 +9,8 @@
 
 #include <funapi/account/account_event_handler_registry.h>
 #include <funapi/account/account.h>
-#include <funapi/account/object_creator_registry.h>
 #include <funapi/common/types.h>
+#include <funapi/object/object_creator_registry.h>
 #include <funapi/object/object.h>
 
 #include "app_messages.pb.h"
