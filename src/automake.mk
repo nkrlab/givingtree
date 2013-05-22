@@ -310,7 +310,7 @@ src-install-exec-hook:
 	    echo "export LD_LIBRARY_PATH=\$$LD_LIBRARY_PATH:$(FUNAPI_LIBDIR):$$destdir" >> $$launcher; \
 	    echo "export LD_PRELOAD=\$$LD_PRELOAD:$(FUNAPI_LD_PRELOAD):$$libs" >> $$launcher; \
 	    echo >> $$launcher; \
-	    echo "$$destdir/$$base --framework_manifest_path="$(FUNAPI_DATADIR)/manifests:$(abs_top_builddir)/manifests" \"\$$@\"" >> $$launcher; \
+	    echo "$(pkgbindir)/$$base --framework_manifest_path="$(FUNAPI_DATADIR)/manifests:$(pkgdatadir)/manifests" \"\$$@\"" >> $$launcher; \
 	    chmod a+rx $$launcher; \
 	  fi; \
 	done
