@@ -14,6 +14,7 @@
 #include <funapi/common/boost_util.h>
 #include <funapi/common/serialization/bson_archive.h>
 #include <funapi/object/object.h>
+#include <funapi/world/world.h>
 #include <glog/logging.h>
 
 #include <algorithm>
@@ -45,38 +46,45 @@ const int64_t kWorldTickMicrosecond = 1000000;  // 1 second.
 
 
 void OnWorldReady(int64_t /*now_microsec*/) {
-  the_world = GivingTree::CreateNew(kWorldObjectModelName);
-  InitializeWorld();
-  the_world->EnterChannel(kRoomChannelName, kRoomChannelSubId);
+  GivingTreePtr world = GivingTree::Cast(fun::World::Get().object());
+  Initialize(world);
+  world->EnterChannel(kRoomChannelName, kRoomChannelSubId);
 }
 
 
 void OnWorldTick(int64_t /*now_microsec*/) {
-  TickWorld();
+  GivingTreePtr world = GivingTree::Cast(fun::World::Get().object());
+  Tick(world);
 }
 
 
 void OnAccountLogin(const fun::Account::Ptr &account) {
+  const fun::AccountId &account_id = account->account_id();
   GivingTreePtr player = GivingTree::Cast(account->object());
-  const string &player_name = player->name();
-  player->set_local_account(account->account_id().local_account());
+
+  player->set_local_account(account_id.local_account());
+
   fun::Multicaster::Get().EnterChannel(kRoomChannelName, kRoomChannelSubId,
                                        account);
 
-  logger::AccountLoginApp(account->account_id().ToString(),
-                          player_name,
+  logger::AccountLoginApp(account_id.ToString(),
+                          player->name(),
                           player->apple_count());
 }
 
 
 void OnAccountLogout(const fun::Account::Ptr &account) {
+  GivingTreePtr world = GivingTree::Cast(fun::World::Get().object());
+  const fun::AccountId &account_id = account->account_id();
   GivingTreePtr player = GivingTree::Cast(account->object());
+
   const string &player_name = player->name();
-  ErasePlayer(player_name);
+  ErasePlayer(world, player_name);
+
   fun::Multicaster::Get().LeaveChannel(kRoomChannelName, kRoomChannelSubId,
                                        account);
 
-  logger::AccountLogoutApp(account->account_id().ToString(),
+  logger::AccountLogoutApp(account_id.ToString(),
                            player_name,
                            player->apple_count());
 }
@@ -91,7 +99,10 @@ void OnSuperAccountRequest(const fun::Account::Ptr &account,
                            const fun::Uuid &request_uuid,
                            const string &command,
                            const json_spirit::mObject &parameters) {
-  DLOG(INFO) << "OnSuperAccountRequest: " << account->account_id()
+  GivingTreePtr world = GivingTree::Cast(fun::World::Get().object());
+  const fun::AccountId &account_id = account->account_id();
+
+  DLOG(INFO) << "OnSuperAccountRequest: " << account_id
              << ": " << command << json_spirit::write(parameters);
 
   if (command == "GiveApples") {
@@ -107,12 +118,12 @@ void OnSuperAccountRequest(const fun::Account::Ptr &account,
       apple_count = i->second.get_int();
     }
 
-    GivingTreePtr player = FindPlayer(player_name);
+    GivingTreePtr player = FindPlayer(world, player_name);
     if (player) {
       int64_t sum_count = player->apple_count() + apple_count;
       player->set_apple_count(sum_count);
 
-      logger::SuperAccountGiveApples(account->account_id().ToString(),
+      logger::SuperAccountGiveApples(account_id.ToString(),
                                      player_name,
                                      apple_count,
                                      sum_count);
@@ -124,7 +135,7 @@ void OnSuperAccountRequest(const fun::Account::Ptr &account,
           1,
           4,
           player->name(),
-          "(supper command)" + account->account_id().local_account(),
+          "(supper command)" + account_id.local_account(),
           "GoldenApple",
           "10001",
           apple_count,
@@ -148,24 +159,30 @@ void OnSuperAccountRequest(const fun::Account::Ptr &account,
 
 void OnAccountMessage(const fun::Account::Ptr &account,
                       const ::ClientAppMessage &msg) {
+  GivingTreePtr world = GivingTree::Cast(fun::World::Get().object());
   GivingTreePtr player = GivingTree::Cast(account->object());
 
-  ::ClientAppMessageType::Type msg_type = msg.GetExtension(client_message_type);
+  ::ClientAppMessageType::Type msg_type =
+      msg.GetExtension(client_message_type);
   switch (msg_type) {
+    case ::ClientAppMessageType::kAccountSendTalk: {
+      OnAccountSendTalk(account,
+                        msg.GetExtension(account_send_talk));
+      break;
+    }
     case ::ClientAppMessageType::kPlayerRegisterName: {
-      OnPlayerRegisterName(player, msg.GetExtension(player_register_name));
+      OnPlayerRegisterName(world, player,
+                           msg.GetExtension(player_register_name));
       break;
     }
     case ::ClientAppMessageType::kPlayerTakeApple: {
-      OnPlayerTakeApple(player, msg.GetExtension(player_take_apple));
+      OnPlayerTakeApple(world, player,
+                        msg.GetExtension(player_take_apple));
       break;
     }
     case ::ClientAppMessageType::kPlayerGiveApples: {
-      OnPlayerGiveApples(player, msg.GetExtension(player_give_apples));
-      break;
-    }
-    case ::ClientAppMessageType::kAccountSendTalk: {
-      OnAccountSendTalk(account, msg.GetExtension(account_send_talk));
+      OnPlayerGiveApples(world, player,
+                         msg.GetExtension(player_give_apples));
       break;
     }
     default: {
@@ -180,100 +197,6 @@ const int64_t kCountDownStart = 10;
 
 const char *kRoomChannelName = "room";
 const char *kRoomChannelSubId = "1";
-
-
-GivingTreePtr the_world;
-
-
-void InitializeWorld() {
-  ResetWorld();
-}
-
-
-void TickWorld() {
-  int64_t count_down = CountDown();
-  logger::WorldTick(the_world, count_down, time(NULL),
-                    "Comment containing \" quote and \n newline");
-
-  if (count_down <= 0) {
-    DropApple();
-    logger::WorldDropApple(the_world->winner_name());
-
-    ResetWorld();
-  }
-}
-
-
-GivingTreePtr FindPlayer(const string &player_name) {
-  return the_world->players().Find(player_name);
-}
-
-
-void InsertPlayer(const GivingTreePtr &player) {
-  GivingTreePtrMap players = the_world->players();
-  players.Insert(player->name(), player);
-  the_world->set_players(players);
-}
-
-
-void ErasePlayer(const string &player_name) {
-  GivingTreePtrMap players = the_world->players();
-  players.erase(player_name);
-  the_world->set_players(players);
-}
-
-
-void OnPlayerRegisterName(const GivingTreePtr &player,
-                          const ::PlayerRegisterName &msg) {
-  const string &new_name = msg.name();
-  if (new_name == "(no name)" || new_name == "") {
-    LOG(INFO) << "OnPlayerRegisterName: Fail: invalid player name: ["
-              << new_name << "]";
-    return;
-  }
-
-  string prev_name = player->name();
-  if (new_name != prev_name) {
-    ErasePlayer(prev_name);
-    player->set_name(new_name);
-    logger::PlayerRegisterName(prev_name, new_name);
-  }
-
-  InsertPlayer(player);
-  logger::PlayerEnterInWorld(new_name);
-}
-
-
-void OnPlayerTakeApple(const GivingTreePtr &player,
-                       const ::PlayerTakeApple &/*msg*/) {
-  int64_t now_microsec = fun::MonotonicClock::Now();
-  logger::PlayerTakeApple(player->name(), now_microsec);
-
-  player->set_bet_microsec(now_microsec);
-}
-
-
-void OnPlayerGiveApples(const GivingTreePtr &player,
-                        const ::PlayerGiveApples &msg) {
-  const string &service_provider = msg.target_service_provider();
-  const string &local_account = msg.target_local_account();
-  fun::AccountId target_id(service_provider, local_account);
-  const int64_t &apple_count = msg.apple_count();
-
-  logger::PlayerTryGivingApples(player->name(),
-                                target_id.ToString(),
-                                apple_count);
-
-  GivingTreePtr target_player =
-      GivingTree::Cast(fun::Account::FindAccountObject(target_id));
-  if (not target_player) {
-    LOG(INFO) << "OnPlayerGiveApples: target player doesn't exist: ["
-              << target_id << "].";
-    return;
-  }
-
-  GiveApples(player, target_player, apple_count);
-}
 
 
 void OnAccountSendTalk(const fun::Account::Ptr &account,
@@ -323,78 +246,59 @@ void OnAccountSendTalk(const fun::Account::Ptr &account,
 }
 
 
-void ResetWorld() {
-  the_world->set_count_down(kCountDownStart);
-  ResetPlayerBets(the_world->players());
-}
-
-
-int64_t CountDown() {
-  int64_t count_down = the_world->count_down();
-  --count_down;
-  the_world->set_count_down(count_down);
-  return count_down;
-}
-
-
-void DropApple() {
-  const GivingTreePtrMap &players = the_world->players();
-  GivingTreePtr winner = SelectWinner(players);
-  string winner_name;
-  if (winner) {
-    GrantApple(winner);
-    winner_name = winner->name();
-  }
-  the_world->set_winner_name(winner_name);
-}
-
-
-void ResetPlayerBets(const GivingTreePtrMap &players) {
-  BOOST_FOREACH(const GivingTreePtrMap::value_type &element, players) {
-    // const string &player_name = element.first;
-    GivingTreePtr player = GivingTree::Cast(element.second);
-    player->set_bet_microsec(0);
-  }
-}
-
-
-GivingTreePtr SelectWinner(const GivingTreePtrMap &players) {
-  GivingTreePtr winner;
-  int64_t winner_microsec = 0;
-
-  BOOST_FOREACH(const GivingTreePtrMap::value_type &element, players) {
-    // const string &player_name = element.first;
-    GivingTreePtr player = GivingTree::Cast(element.second);
-    int64_t bet_microsec = player->bet_microsec();
-    if (bet_microsec > winner_microsec) {
-      winner = player;
-      winner_microsec = bet_microsec;
-    }
+void OnPlayerRegisterName(const GivingTreePtr &world,
+                          const GivingTreePtr &player,
+                          const ::PlayerRegisterName &msg) {
+  const string &new_name = msg.name();
+  if (new_name == "(no name)" || new_name == "") {
+    LOG(INFO) << "OnPlayerRegisterName: Fail: invalid player name: ["
+              << new_name << "]";
+    return;
   }
 
-  return winner;
+  string prev_name = player->name();
+  if (new_name != prev_name) {
+    ErasePlayer(world, prev_name);
+    player->set_name(new_name);
+    logger::PlayerRegisterName(prev_name, new_name);
+  }
+
+  InsertPlayer(world, player);
+  logger::PlayerEnterInWorld(new_name);
 }
 
 
-void GrantApple(const GivingTreePtr &player) {
-  int64_t apple_count = player->apple_count();
-  ++apple_count;
-  player->set_apple_count(apple_count);
+void OnPlayerTakeApple(const GivingTreePtr &/*world*/,
+                       const GivingTreePtr &player,
+                       const ::PlayerTakeApple &/*msg*/) {
+  int64_t now_microsec = fun::MonotonicClock::Now();
+  logger::PlayerTakeApple(player->name(), now_microsec);
 
-  logger::CharacterItemHistory(
-      player->local_account(),
-      "0",
-      player->name(),
-      1,
-      4,
-      player->name(),
-      "(the giving-tree)",
-      "GoldenApple",
-      "10001",
-      1,
-      apple_count - 1,
-      player->apple_count(),
-      "UnderTheGivingTree");
+  player->set_bet_microsec(now_microsec);
+}
+
+
+void OnPlayerGiveApples(const GivingTreePtr &/*world*/,
+                        const GivingTreePtr &player,
+                        const ::PlayerGiveApples &msg) {
+  const string &service_provider = msg.target_service_provider();
+  const string &local_account = msg.target_local_account();
+  fun::AccountId target_id(service_provider, local_account);
+  const int64_t &apple_count = msg.apple_count();
+
+  logger::PlayerTryGivingApples(player->name(),
+                                target_id.ToString(),
+                                apple_count);
+
+  GivingTreePtr target_player =
+      GivingTree::Cast(fun::Account::FindAccountObject(target_id));
+  if (not target_player) {
+    LOG(INFO) << "OnPlayerGiveApples: target player doesn't exist: ["
+              << target_id << "].";
+    return;
+  }
+
+  GiveApples(player, target_player, apple_count);
 }
 
 
@@ -455,6 +359,126 @@ void GiveApples(const GivingTreePtr &giver, const GivingTreePtr &taker,
       "GiveApples",
       taker->name(),
       "TakeApples");
+}
+
+
+void Initialize(const GivingTreePtr &world) {
+  Reset(world);
+}
+
+
+void Tick(const GivingTreePtr &world) {
+  int64_t count_down = CountDown(world);
+  logger::WorldTick(world, count_down, time(NULL),
+                    "Comment containing \" quote and \n newline");
+
+  if (count_down <= 0) {
+    DropApple(world);
+    logger::WorldDropApple(world->winner_name());
+
+    Reset(world);
+  }
+}
+
+
+void Reset(const GivingTreePtr &world) {
+  world->set_count_down(kCountDownStart);
+  ResetPlayerBets(world->players());
+}
+
+
+int64_t CountDown(const GivingTreePtr &world) {
+  int64_t count_down = world->count_down();
+  --count_down;
+  world->set_count_down(count_down);
+  return count_down;
+}
+
+
+void DropApple(const GivingTreePtr &world) {
+  int64_t world_apple_count = world->apple_count();
+  ++ world_apple_count;
+  world->set_apple_count(world_apple_count);
+
+  const GivingTreePtrMap &players = world->players();
+  GivingTreePtr winner = SelectWinner(players);
+  string winner_name;
+  if (winner) {
+    GrantApple(winner);
+    winner_name = winner->name();
+  }
+  world->set_winner_name(winner_name);
+}
+
+
+GivingTreePtr FindPlayer(const GivingTreePtr &world,
+                         const string &player_name) {
+  return world->players().Find(player_name);
+}
+
+
+void InsertPlayer(const GivingTreePtr &world,
+                  const GivingTreePtr &player) {
+  GivingTreePtrMap players = world->players();
+  players.Insert(player->name(), player);
+  world->set_players(players);
+}
+
+
+void ErasePlayer(const GivingTreePtr &world,
+                 const string &player_name) {
+  GivingTreePtrMap players = world->players();
+  players.erase(player_name);
+  world->set_players(players);
+}
+
+
+void ResetPlayerBets(const GivingTreePtrMap &players) {
+  BOOST_FOREACH(const GivingTreePtrMap::value_type &element, players) {
+    // const string &player_name = element.first;
+    GivingTreePtr player = GivingTree::Cast(element.second);
+    player->set_bet_microsec(0);
+  }
+}
+
+
+GivingTreePtr SelectWinner(const GivingTreePtrMap &players) {
+  GivingTreePtr winner;
+  int64_t winner_microsec = 0;
+
+  BOOST_FOREACH(const GivingTreePtrMap::value_type &element, players) {
+    // const string &player_name = element.first;
+    GivingTreePtr player = GivingTree::Cast(element.second);
+    int64_t bet_microsec = player->bet_microsec();
+    if (bet_microsec > winner_microsec) {
+      winner = player;
+      winner_microsec = bet_microsec;
+    }
+  }
+
+  return winner;
+}
+
+
+void GrantApple(const GivingTreePtr &player) {
+  int64_t apple_count = player->apple_count();
+  ++apple_count;
+  player->set_apple_count(apple_count);
+
+  logger::CharacterItemHistory(
+      player->local_account(),
+      "0",
+      player->name(),
+      1,
+      4,
+      player->name(),
+      "(the giving-tree)",
+      "GoldenApple",
+      "10001",
+      1,
+      apple_count - 1,
+      player->apple_count(),
+      "UnderTheGivingTree");
 }
 
 }  // namespace giving_tree

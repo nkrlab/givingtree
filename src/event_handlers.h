@@ -71,37 +71,43 @@ extern const int64_t kCountDownStart;
 extern const char *kRoomChannelName;
 extern const char *kRoomChannelSubId;
 
-// the one and only world object.
-extern GivingTreePtr the_world;
-
-// world methods.
-void InitializeWorld();
-void TickWorld();
-
-// players methods.
-GivingTreePtr FindPlayer(const string &player_name);
-void InsertPlayer(const GivingTreePtr &player);
-void ErasePlayer(const string &player_name);
-
 // account message handlers.
-void OnPlayerRegisterName(const GivingTreePtr &player,
-                          const ::PlayerRegisterName &msg);
-void OnPlayerTakeApple(const GivingTreePtr &player,
-                       const ::PlayerTakeApple &msg);
-void OnPlayerGiveApples(const GivingTreePtr &player,
-                        const ::PlayerGiveApples &msg);
 void OnAccountSendTalk(const fun::Account::Ptr &account,
                        const ::AccountSendTalk &msg);
+void OnPlayerRegisterName(const GivingTreePtr &world,
+                          const GivingTreePtr &player,
+                          const ::PlayerRegisterName &msg);
+void OnPlayerTakeApple(const GivingTreePtr &world,
+                       const GivingTreePtr &player,
+                       const ::PlayerTakeApple &msg);
+void OnPlayerGiveApples(const GivingTreePtr &world,
+                        const GivingTreePtr &player,
+                        const ::PlayerGiveApples &msg);
 
-// app sub functions.
-void ResetWorld();
-int64_t CountDown();
-void DropApple();
-void ResetPlayerBets(const GivingTreePtrMap &players);
-GivingTreePtr SelectWinner(const GivingTreePtrMap &players);
-void GrantApple(const GivingTreePtr &player);
+// global functions.
 void GiveApples(const GivingTreePtr &giver, const GivingTreePtr &taker,
                 const int64_t &apple_count);
+
+// methods for world.
+void Initialize(const GivingTreePtr &world);
+void Tick(const GivingTreePtr &world);
+void Reset(const GivingTreePtr &world);
+int64_t CountDown(const GivingTreePtr &world);
+void DropApple(const GivingTreePtr &world);
+
+GivingTreePtr FindPlayer(const GivingTreePtr &world,
+                         const string &player_name);
+void InsertPlayer(const GivingTreePtr &world,
+                  const GivingTreePtr &player);
+void ErasePlayer(const GivingTreePtr &world,
+                 const string &player_name);
+
+// methods for players.
+void ResetPlayerBets(const GivingTreePtrMap &players);
+GivingTreePtr SelectWinner(const GivingTreePtrMap &players);
+
+// methods for player.
+void GrantApple(const GivingTreePtr &player);
 
 }  // namespace giving_tree
 
