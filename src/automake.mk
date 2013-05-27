@@ -115,15 +115,15 @@ giving_tree_SOURCES = \
 
 # library 를 만들기 위해서 필요한 생성되는 file 들.
 nodist_giving_tree_SOURCES = \
-  $(top_builddir)/src/giving_tree_loggers.h \
-  $(top_builddir)/src/app_messages.pb.cc \
-  $(top_builddir)/src/app_messages.pb.h \
   $(top_builddir)/src/giving_tree_client_messages.pb.cc \
   $(top_builddir)/src/giving_tree_client_messages.pb.h \
+  $(top_builddir)/src/giving_tree_loggers.h \
   $(top_builddir)/src/giving_tree_server_messages.pb.cc \
   $(top_builddir)/src/giving_tree_server_messages.pb.h \
   $(top_builddir)/src/giving_tree.cc \
   $(top_builddir)/src/giving_tree.h \
+  $(top_builddir)/src/app_messages.pb.cc \
+  $(top_builddir)/src/app_messages.pb.h \
   $(top_builddir)/src/message_dispatcher.h
 
 # program 를 만들 때 preprocessing option.
@@ -160,19 +160,15 @@ $(top_srcdir)/src/giving_tree.json \
 $(FUNAPI_BINDIR)/object_generator.py
 	@$(MKDIR_P) $(top_builddir)/src
 	$(FUNAPI_BINDIR)/object_generator.py \
-  --definition_file=$(top_srcdir)/src/giving_tree.json \
-  --template_directory=$(FUNAPI_DATADIR) \
-  --template_name=object.template \
-  --output_directory=$(top_builddir)/src \
-  --output_name=giving_tree
+	  --definition_file=$(top_srcdir)/src/giving_tree.json \
+	  --template_directory=$(FUNAPI_DATADIR) \
+	  --template_name=object.template \
+	  --output_directory=$(top_builddir)/src \
+	  --output_name=giving_tree
 
 BUILT_SOURCES += $(top_builddir)/src/giving_tree.cc
 BUILT_SOURCES += $(top_builddir)/src/giving_tree.h
 
-
-$(abs_top_builddir)/object_models.json: \
-$(top_srcdir)/src/object_models.json
-	ln -s `readlink -f $<` $@
 
 
 # Message dispatcher class 를 생성.
@@ -181,53 +177,68 @@ $(FUNAPI_DATADIR)/message_dispatcher.template.h \
 $(top_srcdir)/./src/app_messages.proto
 	@$(MKDIR_P) $(top_builddir)/src
 	$(FUNAPI_BINDIR)/message_dispatcher_generator.py \
-  --protobuf_files=$(top_srcdir)/./src/app_messages.proto \
-  --cpp_template_files=$(FUNAPI_DATADIR)/message_dispatcher.template.h \
-  --output_name=$(top_builddir)/src/message_dispatcher
+	  --protobuf_files=$(top_srcdir)/./src/app_messages.proto \
+	  --cpp_template_files=$(FUNAPI_DATADIR)/message_dispatcher.template.h \
+	  --output_name=$(top_builddir)/src/message_dispatcher
 
 BUILT_SOURCES += $(top_builddir)/src/message_dispatcher.h
 
 
 # Protobuf cc/h files 생성.
 
-$(top_builddir)/src/giving_tree_client_messages.pb.cc \
-$(top_builddir)/src/giving_tree_client_messages.pb.h: \
-$(top_srcdir)/./src/giving_tree_client_messages.proto
-	@$(MKDIR_P) $(top_builddir)/src
-	target=`readlink -f $(top_srcdir)/./src/giving_tree_client_messages.proto`; \
-	protoc --cpp_out=$(top_builddir)/src \
-	--proto_path=`dirname $$target` \
-	--proto_path=$(FUNAPI_INCLUDEDIR) \
-	$$target
-
-BUILT_SOURCES += $(top_builddir)/src/giving_tree_client_messages.pb.cc
-BUILT_SOURCES += $(top_builddir)/src/giving_tree_client_messages.pb.h
-
-$(top_builddir)/src/giving_tree_server_messages.pb.cc \
-$(top_builddir)/src/giving_tree_server_messages.pb.h: \
-$(top_srcdir)/./src/giving_tree_server_messages.proto
-	@$(MKDIR_P) $(top_builddir)/src
-	target=`readlink -f $(top_srcdir)/./src/giving_tree_server_messages.proto`; \
-	protoc --cpp_out=$(top_builddir)/src \
-	--proto_path=`dirname $$target` \
-	--proto_path=$(FUNAPI_INCLUDEDIR) \
-	$$target
-
-BUILT_SOURCES += $(top_builddir)/src/giving_tree_server_messages.pb.cc
-BUILT_SOURCES += $(top_builddir)/src/giving_tree_server_messages.pb.h
-
+# App message
 $(top_builddir)/src/app_messages.pb.cc \
 $(top_builddir)/src/app_messages.pb.h: \
 $(top_srcdir)/./src/app_messages.proto
 	@$(MKDIR_P) $(top_builddir)/src
 	target=`readlink -f $(top_srcdir)/./src/app_messages.proto`; \
 	protoc --cpp_out=$(top_builddir)/src \
-	--proto_path=`dirname $$target` \
-	--proto_path=$(FUNAPI_INCLUDEDIR) \
-	$$target
+	  --proto_path=`dirname $$target` \
+	  --proto_path=$(FUNAPI_INCLUDEDIR) \
+	  $$target
 
 BUILT_SOURCES += $(top_builddir)/src/app_messages.pb.cc
 BUILT_SOURCES += $(top_builddir)/src/app_messages.pb.h
+
+
+# Client message
+$(top_builddir)/src/giving_tree_client_messages.pb.cc \
+$(top_builddir)/src/giving_tree_client_messages.pb.h: \
+$(top_srcdir)/./src/giving_tree_client_messages.proto
+	@$(MKDIR_P) $(top_builddir)/src
+	target=`readlink -f $(top_srcdir)/./src/giving_tree_client_messages.proto`; \
+	protoc --cpp_out=$(top_builddir)/src \
+	  --proto_path=`dirname $$target` \
+	  --proto_path=$(FUNAPI_INCLUDEDIR) \
+	  $$target
+
+BUILT_SOURCES += $(top_builddir)/src/giving_tree_client_messages.pb.cc
+BUILT_SOURCES += $(top_builddir)/src/giving_tree_client_messages.pb.h
+
+
+# Server message
+$(top_builddir)/src/giving_tree_server_messages.pb.cc \
+$(top_builddir)/src/giving_tree_server_messages.pb.h: \
+$(top_srcdir)/./src/giving_tree_server_messages.proto
+	@$(MKDIR_P) $(top_builddir)/src
+	target=`readlink -f $(top_srcdir)/./src/giving_tree_server_messages.proto`; \
+	protoc --cpp_out=$(top_builddir)/src \
+	  --proto_path=`dirname $$target` \
+	  --proto_path=$(FUNAPI_INCLUDEDIR) \
+	  $$target
+
+BUILT_SOURCES += $(top_builddir)/src/giving_tree_server_messages.pb.cc
+BUILT_SOURCES += $(top_builddir)/src/giving_tree_server_messages.pb.h
+
+
+# object_models.json 파일을 복사.
+$(abs_top_builddir)/object_models.json: \
+$(top_srcdir)/src/object_models.json
+	ln -s `readlink -f $<` $@
+
+
+# object_models.json을 /usr/share/app_name에 설치
+pkgdata_DATA += $(top_srcdir)/src/object_models.json
 
 
 ################################################################################
@@ -269,7 +280,7 @@ src-local:
 	    echo "export LD_LIBRARY_PATH=\$$LD_LIBRARY_PATH:$(FUNAPI_LIBDIR):$$destdir/.libs:$$libpath" >> $$launcher; \
 	    echo "export LD_PRELOAD=\$$LD_PRELOAD:$(FUNAPI_LD_PRELOAD):$$libs" >> $$launcher; \
 	    echo >> $$launcher; \
-	    echo "$(abs_top_builddir)/$$file --framework_manifest_path="$(FUNAPI_DATADIR)/manifests:$(abs_top_builddir)/manifests" \"\$$@\"" >> $$launcher; \
+	    echo "$(abs_top_builddir)/$$file --framework_manifest_path="$(FUNAPI_DATADIR)/manifests:$(abs_top_builddir)/manifests" --object_models_path="$(abs_top_builddir)/object_models.json" \"\$$@\"" >> $$launcher; \
 	    chmod a+rx $$launcher; \
 	  fi; \
 	done
@@ -282,7 +293,7 @@ src-install-data-hook:
 	  destdir="$(DESTDIR)$(pkgdatadir)/manifests/$$(basename $$(dirname $$file))"; \
 	  $(mkinstalldirs) $$destdir; \
 	  base=$$(basename $$file); \
-    $(INSTALL_DATA) $$(readlink -f $$file) $$destdir/$$base; \
+	  $(INSTALL_DATA) $$(readlink -f $$file) $$destdir/$$base; \
 	done
 
 
@@ -310,8 +321,7 @@ src-install-exec-hook:
 	    echo "export LD_LIBRARY_PATH=\$$LD_LIBRARY_PATH:$(FUNAPI_LIBDIR):$$destdir" >> $$launcher; \
 	    echo "export LD_PRELOAD=\$$LD_PRELOAD:$(FUNAPI_LD_PRELOAD):$$libs" >> $$launcher; \
 	    echo >> $$launcher; \
-	    echo "$(pkgbindir)/$$base --framework_manifest_path="$(FUNAPI_DATADIR)/manifests:$(pkgdatadir)/manifests" \"\$$@\"" >> $$launcher; \
+	    echo "$(pkgbindir)/$$base --framework_manifest_path="$(FUNAPI_DATADIR)/manifests:$(pkgdatadir)/manifests" --object_models_path="$(pkgdatadir)/object_models.json" \"\$$@\"" >> $$launcher; \
 	    chmod a+rx $$launcher; \
 	  fi; \
 	done
-
