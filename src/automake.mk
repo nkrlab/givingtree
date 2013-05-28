@@ -154,15 +154,15 @@ BUILT_SOURCES += $(top_builddir)/src/giving_tree_loggers.h
 # Object class 를 생성.
 $(top_builddir)/src/giving_tree.cc \
 $(top_builddir)/src/giving_tree.h: \
-$(FUNAPI_DATADIR)/object.template.cc \
-$(FUNAPI_DATADIR)/object.template.h \
+$(FUNAPI_DATADIR)/app_object.cc.template \
+$(FUNAPI_DATADIR)/app_object.h.template \
 $(top_srcdir)/src/giving_tree.json \
 $(FUNAPI_BINDIR)/object_generator.py
 	@$(MKDIR_P) $(top_builddir)/src
 	$(FUNAPI_BINDIR)/object_generator.py \
 	  --definition_file=$(top_srcdir)/src/giving_tree.json \
 	  --template_directory=$(FUNAPI_DATADIR) \
-	  --template_name=object.template \
+	  --template_name=app_object \
 	  --output_directory=$(top_builddir)/src \
 	  --output_name=giving_tree
 
