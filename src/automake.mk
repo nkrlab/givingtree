@@ -170,14 +170,32 @@ BUILT_SOURCES += $(top_builddir)/src/giving_tree.cc
 BUILT_SOURCES += $(top_builddir)/src/giving_tree.h
 
 
+# app_messages.proto 생성.
+# app_messages.proto 파일을 사용하는 곳은 다음과 같다:
+# - message_dispatcher.h 생성
+# - app_messages.pb.h/cc 생성
+$(top_builddir)/./src/app_messages.proto: \
+$(FUNAPI_DATADIR)/app_messages.proto.template \
+$(top_srcdir)/./src/giving_tree_client_messages.proto \
+$(top_srcdir)/./src/giving_tree_server_messages.proto \
+$(FUNAPI_BINDIR)/app_message_generator.py
+	@$(MKDIR_P) $(top_builddir)/./src
+	$(FUNAPI_BINDIR)/app_message_generator.py \
+	  --client_proto=$(top_srcdir)/./src/giving_tree_client_messages.proto \
+	  --server_proto=$(top_srcdir)/./src/giving_tree_server_messages.proto \
+	  --template=$(FUNAPI_DATADIR)/app_messages.proto.template \
+	  --output=$(top_builddir)/./src/app_messages.proto
+
+BUILT_SOURCES += $(top_builddir)/./src/app_messages.proto
+
 
 # Message dispatcher class 를 생성.
 $(top_builddir)/src/message_dispatcher.h: \
 $(FUNAPI_DATADIR)/message_dispatcher.template.h \
-$(top_srcdir)/./src/app_messages.proto
+$(top_builddir)/./src/app_messages.proto
 	@$(MKDIR_P) $(top_builddir)/src
 	$(FUNAPI_BINDIR)/message_dispatcher_generator.py \
-	  --protobuf_files=$(top_srcdir)/./src/app_messages.proto \
+	  --protobuf_files=$(top_builddir)/./src/app_messages.proto \
 	  --cpp_template_files=$(FUNAPI_DATADIR)/message_dispatcher.template.h \
 	  --output_name=$(top_builddir)/src/message_dispatcher
 
@@ -189,9 +207,11 @@ BUILT_SOURCES += $(top_builddir)/src/message_dispatcher.h
 # App message
 $(top_builddir)/src/app_messages.pb.cc \
 $(top_builddir)/src/app_messages.pb.h: \
-$(top_srcdir)/./src/app_messages.proto
+$(top_builddir)/./src/app_messages.proto
+	@$(LN_S) $$(readlink -f $(top_srcdir)/./src/giving_tree_client_messages.proto) $(top_builddir)/./src/giving_tree_client_messages.proto
+	@$(LN_S) $$(readlink -f $(top_srcdir)/./src/giving_tree_server_messages.proto) $(top_builddir)/./src/giving_tree_server_messages.proto
 	@$(MKDIR_P) $(top_builddir)/src
-	target=`readlink -f $(top_srcdir)/./src/app_messages.proto`; \
+	target=`readlink -f $(top_builddir)/./src/app_messages.proto`; \
 	protoc --cpp_out=$(top_builddir)/src \
 	  --proto_path=`dirname $$target` \
 	  --proto_path=$(FUNAPI_INCLUDEDIR) \
