@@ -16,6 +16,7 @@ AC_CONFIG_AUX_DIR(autoconf-aux)
 AC_CONFIG_SRCDIR([src/])
 AC_CONFIG_HEADER([config.h])
 AC_PREFIX_DEFAULT(["/usr"])
+AC_LANG([C++])
 
 dnl Defines pkgbindir to use pkgbin_SCRIPTS
 AC_SUBST([pkgbindir], ["\$(bindir)/$PACKAGE_NAME"])
