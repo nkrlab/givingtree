@@ -44,9 +44,6 @@ AC_LIBTOOL_DLOPEN
 LT_SYS_DLOPEN_SELF
 AC_PROG_LIBTOOL
 
-dnl Checks required functions
-AC_CHECK_FUNCS([fdatasync poll])
-
 dnl Checks required libraries.
 dnl Boost sets own variable for library location.
 dnl Thus we add such variable to LIBS in Makefile.am.
