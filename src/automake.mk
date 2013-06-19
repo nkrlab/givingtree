@@ -32,9 +32,6 @@ AM_CPPFLAGS += -DBOOST_FILESYSTEM_VERSION=3
 # For FunAPI
 AM_CPPFLAGS += $(FUNAPI_CPPFLAGS)
 
-# For websocketpp
-AM_CPPFLAGS += $(WEBSOCKETPP_CPPFLAGS)
-
 # To access own header files.
 AM_CPPFLAGS += -I$(top_srcdir)/include
 AM_CPPFLAGS += -I$(top_srcdir)/src
@@ -77,9 +74,7 @@ AM_CXXFLAGS += -fno-strict-aliasing
 AM_LDFLAGS = -rdynamic
 AM_LDFLAGS += $(BOOST_LDFLAGS)
 AM_LDFLAGS += $(FUNAPI_LDFLAGS)
-AM_LDFLAGS += $(WEBSOCKETPP_LDFLAGS)
 
-LIBS += $(WEBSOCKETPP_LIBS)  # Bug 때문에 boost 보다 websocketpp 가 먼저 나와야함
 LIBS += $(BOOST_FILESYSTEM_LIB)
 LIBS += $(BOOST_SYSTEM_LIB)
 LIBS += $(BOOST_THREAD_LIB)

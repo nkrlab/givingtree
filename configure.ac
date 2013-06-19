@@ -53,7 +53,6 @@ AX_BOOST_SYSTEM
 AX_BOOST_THREAD
 AX_BOOST_UNIT_TEST_FRAMEWORK
 AX_FUNAPI([0.0.1], , AC_MSG_ERROR([FunAPI is required]))
-AX_WEBSOCKETPP
 
 if test "$ax_cv_boost_filesystem" != "yes"; then
   AC_MSG_ERROR([Boost filesystem is required])
