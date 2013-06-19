@@ -74,7 +74,6 @@ fi
 
 AX_PTHREAD(, AC_MSG_ERROR([Pthread is required]))
 AX_PROTOBUF
-AX_CHECK_OPENSSL(, AC_MSG_ERROR([OpenSSL is required]))
 
 dnl AC_CHECK_LIB adds to LIBS if action-found is missing.
 AC_CHECK_LIB([gflags], [exit], , AC_MSG_ERROR([gflags is required]))
