@@ -32,7 +32,6 @@ dnl Checks required compilers and tools.
 AC_PROG_CXX
 AC_PROG_CC
 AC_PROG_CPP
-DX_INIT_DOXYGEN(giving_tree, doxygen/doxygen.cfg, documents)
 
 dnl Uses gcc extentions and allows files larger than 2GB.
 AC_USE_SYSTEM_EXTENSIONS
@@ -91,7 +90,6 @@ AX_CHECK_PROFILING
 
 AC_CONFIG_FILES([
 Makefile
-doxygen/doxygen.conf
 ])
 AC_OUTPUT
 

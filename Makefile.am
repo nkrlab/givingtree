@@ -79,14 +79,6 @@ include $(top_srcdir)/src/automake.mk
 # top-level 의 make target 들.
 ################################################################################
 
-doc:
-	@if [ ! $(DX_DOXYGEN) ]; then \
-	  echo "doxygen is not installed."; \
-	else \
-	  $(DX_DOXYGEN) $(top_builddir)/doxygen/doxygen.conf; \
-	fi
-
-
 lint:
 	make -j 1 lint-sequentially
 
