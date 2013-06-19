@@ -25,7 +25,6 @@
 #    AC_SUBST(FUNAPI_CPPFLAGS)
 #    AC_SUBST(FUNAPI_LDFLAGS)
 #    AC_SUBST(FUNAPI_LIBS)
-#    AC_SUBST(FUNAPI_LD_PRELOAD)
 #
 #   And sets:
 #
@@ -98,18 +97,7 @@ if test "x$want_funapi" = "xyes"; then
   FUNAPI_CPPFLAGS="-I$FUNAPI_INCLUDEDIR"
   FUNAPI_LDFLAGS="-L$FUNAPI_LIBDIR"
 
-  FUNAPI_LIBS=
-  FUNAPI_LD_PRELOAD=
-  for ac_funapi_lib_tmp in 'libfunapi_api.so' 'libfunapi_system.so' 'libfunapi_common.so' 'libfunapi_db_client.so' 'libfunapi_framework.so' 'libfunapi_rpc.so'; do
-    ac_funapi_lib_tmp=$FUNAPI_LIBDIR/$ac_funapi_lib_tmp
-    nm --dynamic `readlink -f $ac_funapi_lib_tmp` | grep -q main > /dev/null 2> /dev/null
-    if test $? -eq 1; then
-      ac_funapi_lib_basename_tmp=`basename $ac_funapi_lib_tmp`
-      FUNAPI_LD_PRELOAD="$FUNAPI_LD_PRELOAD:$ac_funapi_lib_basename_tmp"
-      ac_funapi_lib_canonical_tmp=`echo $ac_funapi_lib_basename_tmp | sed -e 's,\(lib\)\(.*\)\(.so\),-l\2,g'`
-      FUNAPI_LIBS="$FUNAPI_LIBS $ac_funapi_lib_canonical_tmp"
-    fi
-  done
+  FUNAPI_LIBS=-lfunapi
 
   CPPFLAGS_SAVED="$CPPFLAGS"
   CPPFLAGS="$CPPFLAGS $FUNAPI_CPPFLAGS"
@@ -149,7 +137,6 @@ if test "x$want_funapi" = "xyes"; then
     AC_SUBST(FUNAPI_CPPFLAGS)
     AC_SUBST(FUNAPI_LDFLAGS)
     AC_SUBST(FUNAPI_LIBS)
-    AC_SUBST(FUNAPI_LD_PRELOAD)
     AC_DEFINE(HAVE_FUNAPI,,[define if the FunAPI library is available])
     # if found
     ifelse([$2], , :, [$2])

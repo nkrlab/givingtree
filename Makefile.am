@@ -36,9 +36,6 @@ CLEANFILES = $(BUILT_SOURCES)
 # unit test program 들.
 UNITTESTS =
 
-# system test program 들.
-SYSTESTS =
-
 # 'make all' 을 한 다음에 수행될 hook
 LOCAL_HOOKS =
 
@@ -50,19 +47,13 @@ INSTALL_EXEC_HOOKS =
 
 
 # 'make install' 시 설치될 내용들
-#   /usr/bin/<pkgName> 에 설치될 compiled program 들.
-pkgbin_PROGRAMS =
-#   /usr/bin/<pkgName> 에 설치될 script 들
-pkgbin_SCRIPTS =
 #   /usr/share/<pkgName> 에 설치될 data file 들.
 pkgdata_DATA =
-#   /usr/include/<pkgName> 에 설치될 header file 들.
-pkginclude_HEADERS =
 #   /usr/lib/<pkgName> 에 설치될 library file 들.
 pkglib_LTLIBRARIES =
 
 # 'make install' 시 빠져야 되는 것들.
-noinst_PROGRAMS = $(UNITTESTS) $(SYSTESTS)
+noinst_PROGRAMS = $(UNITTESTS)
 noinst_LTLIBRARIES =
 
 
@@ -109,17 +100,13 @@ test:
 	make -j 1 test-sequentially
 
 
-test-sequentially: unit-test sys-test
+test-sequentially: unit-test
 
 
 unit-test: $(UNITTESTS)
 	@echo "==== Running unit tests ==="
 	@for f in $^; do echo "--- $$f ---"; $$f; done
 
-
-sys-test: $(SYSTESTS)
-	@echo "==== Running system tests ==="
-	@for f in $^; do echo "--- $$f ---"; $$f; done
 
 package: all
 	( \

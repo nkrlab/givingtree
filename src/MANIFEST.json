@@ -3,7 +3,8 @@
   "components": [
     {
       "name": "GivingTreeServer",
-      "dependency": []
+      "dependency": ["Account", "CommonApi", "ObjectRegistry", "TickApi", "World"],
+      "library": "libgiving_tree.la"
     }
   ]
 }
