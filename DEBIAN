@@ -1,0 +1,17 @@
+# Copyright (C) 2013 iFunFactory Inc. All Rights Reserved.
+#
+# This work is confidential and proprietary to iFunFactory Inc. and
+# must not be used, disclosed, copied, or distributed without the prior
+# consent of iFunFactory Inc..
+
+# This file allows a subset of control information allowed in debian/control.
+#
+# The following keyword will be respected:
+#   Section, Priority, Maintainer, Depends
+#
+# Please refer to the debian manual for the meaning of the keywords.
+
+Section: devel
+Priority: optional
+Maintainer: unknown
+Depends: funapi-dev (>=0.0.3)

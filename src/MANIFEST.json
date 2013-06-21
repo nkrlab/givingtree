@@ -2,9 +2,9 @@
   "version": 1,
   "components": [
     {
-      "name": "GivingTreeServer",
+      "name": "giving_tree_server",
       "dependency": ["Account", "CommonApi", "ObjectRegistry", "TickApi", "World"],
-      "library": "libgiving_tree.la"
+      "library": "libgiving_tree.so"
     }
   ]
 }

@@ -1,7 +1,7 @@
 ===============================================================================
 Introduction
 ===============================================================================
-This is an example project that illustrates how to use the Nexon Funapi.
+This is an example project that illustrates how to use the iFunFactory Funapi.
 It consists of a client part and a server part. You need to build both of them
 to test.
 
@@ -9,12 +9,11 @@ to test.
 ===============================================================================
 How to compile
 ===============================================================================
-Server is in C++ and can be built using the standard `configure && make'
+Server is in C++ and can be built using 'cmake'
 
-$ ./boot.sh
 $ mkdir build
 $ cd build
-$ ../configure
+$ cmake ..
 $ make
 
 
@@ -25,10 +24,10 @@ Client is shipped ready in Python. So you do not have to build.
 How to run
 ===============================================================================
 First run the server. After building a server, you can see a file named
-`giving_tree-launcher'. This is a shell script which pre-loads required
+`giving_tree-local'. This is a shell script which pre-loads required
 libraries including Funapi. Simply run the script.
 
-$ cd build; ./giving_tree-launcher
+$ cd build; ./giving_tree-local
 
 
 Next, run the client.
