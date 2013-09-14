@@ -75,7 +75,8 @@ class ChatReader(basic.LineReceiver, funapi_server_stub.CallbackInterface):
   # pylint: disable-msg=C0103
   def lineReceived(self, line):
     """LineReceiver 로부터."""
-    request = account_pb.ClientAccountMessage()
+    account_msg = account_pb.AccountMessage()
+    request = account_msg.client_message
 
     cmds = WHITE_SPACE.split(line.strip())
     cmd = cmds[0]
@@ -172,7 +173,7 @@ class ChatReader(basic.LineReceiver, funapi_server_stub.CallbackInterface):
             app_pb.ClientAppMessageType.kPlayerRegisterName
         request.app_message.Extensions[app_pb.player_register_name].name = cmd
 
-    self.protocol.write(request.SerializeToString())
+    self.protocol.write(account_msg.SerializeToString())
 
   # pylint: disable-msg=C0103
   def rawDataReceived(self, data):
@@ -187,8 +188,9 @@ class ChatReader(basic.LineReceiver, funapi_server_stub.CallbackInterface):
 
   def on_message_received(self, protocol, message):
     """funapi_server_stub.EventHandlerInterface"""
-    server_msg = account_pb.ServerAccountMessage()
-    server_msg.ParseFromString(message)
+    account_msg = account_pb.AccountMessage()
+    account_msg.ParseFromString(message)
+    server_msg = account_msg.server_message
     msg_type = server_msg.type
 
     if (msg_type == account_pb.ServerAccountMessage.kAttributeUpdatesMessage):

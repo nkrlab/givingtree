@@ -6,6 +6,24 @@
 
 
 //////////////////////////////////////////////////////////////////////////////
+// funapi account message.
+
+
+message AccountMessage {
+  enum Type {
+    kClientAccountMessage = 2;
+    kServerAccountMessage = 3;
+    kMaintenanceAccountMessage = 4;
+  }
+  optional Type type = 1;
+
+  optional ClientAccountMessage client_message = 2;
+  optional ServerAccountMessage server_message = 3;
+  optional MaintenanceAccountMessage maintenance_message = 4;
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
 // account messages from client to server.
 
 
@@ -80,9 +98,13 @@ message ServerAccountMessage {
 message AccountLoginResponse {
   enum FailCode {
     kSuccess = 0;
-    kPendingAccount = 1;
-    kServiceProviderNotAvailable = 2;
-    kWrongAuthKey = 3;
+    kUnknownFail = 1;
+    kAlreadyLoggedIn = 2;
+    kPendingSession = 3;
+    kPendingAccountId = 4;
+    kServiceProviderNotAvailable = 5;
+    kWrongAuthKey = 6;
+    kPersonalInfoFail = 7;
   }
   optional FailCode fail_code = 1;
   optional string fail_description = 2;
@@ -148,3 +170,11 @@ message ServerAppMessage {
   extensions 1000 to max;
 }
 
+
+//////////////////////////////////////////////////////////////////////////////
+// account messages from maintenance to client.
+
+
+message MaintenanceAccountMessage {
+  optional string info = 1;
+}

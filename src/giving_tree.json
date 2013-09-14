@@ -56,12 +56,11 @@
       "persistent" : true,
       "channels" : ["room"]
     },
-    "bet_microsec" : {
+    "bet_clock" : {
       "data_type" : {
-        "base" : "integer",
-        "default" : 0,
-        "min" : -9223372036854775807,
-        "max" : 9223372036854775807
+        "base" : "string",
+        "default" : "",
+        "max_length" : 64
       },
       "persistent" : false,
       "channels" : ["room"]

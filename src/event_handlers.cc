@@ -7,21 +7,17 @@
 #include "event_handlers.h"
 
 #include <boost/foreach.hpp>
-#include <boost/uuid/uuid_io.hpp>
-#include <funapi/account/account.h>
 #include <funapi/account/multicaster.h>
 #include <funapi/api/clock.h>
 #include <funapi/common/boost_util.h>
 #include <funapi/common/serialization/bson_archive.h>
-#include <funapi/object/object.h>
 #include <funapi/world/world.h>
 #include <glog/logging.h>
 
 #include <algorithm>
 
-#include "giving_tree_loggers.h"
-#include "giving_tree_types.h"
 #include "giving_tree.h"
+#include "giving_tree_loggers.h"
 
 
 namespace giving_tree {
@@ -31,28 +27,28 @@ const char *kAccountObjectModelName = "Player";
 
 
 fun::Object::Ptr CreateObject(const string &model) {
-  return giving_tree::GivingTree::CreateNew(model);
+  return GivingTree::CreateNew(model);
 }
 
 
 fun::Object::Ptr DeserializeObject(const string &serial) {
   fun::BsonArchive::Ptr archive_ptr =
       fun::BsonArchive::CreateFromSerialized(serial);
-  return giving_tree::GivingTree::CreateFromSerialized(*archive_ptr);
+  return GivingTree::CreateFromSerialized(*archive_ptr);
 }
 
 
 const int64_t kWorldTickMicrosecond = 1000000;  // 1 second.
 
 
-void OnWorldReady(int64_t /*now_microsec*/) {
+void OnWorldReady() {
   GivingTreePtr world = GivingTree::Cast(fun::World::Get().object());
   Initialize(world);
   world->EnterChannel(kRoomChannelName, kRoomChannelSubId);
 }
 
 
-void OnWorldTick(int64_t /*now_microsec*/) {
+void OnWorldTick() {
   GivingTreePtr world = GivingTree::Cast(fun::World::Get().object());
   Tick(world);
 }
@@ -193,6 +189,9 @@ void OnAccountMessage(const fun::Account::Ptr &account,
 }
 
 
+const string kEpochClockString =
+    boost::posix_time::to_iso_string(fun::RealClock::kEpochClock);
+
 const int64_t kCountDownStart = 10;
 
 const char *kRoomChannelName = "room";
@@ -271,10 +270,12 @@ void OnPlayerRegisterName(const GivingTreePtr &world,
 void OnPlayerTakeApple(const GivingTreePtr &/*world*/,
                        const GivingTreePtr &player,
                        const ::PlayerTakeApple &/*msg*/) {
-  int64_t now_microsec = fun::MonotonicClock::Now();
-  logger::PlayerTakeApple(player->name(), now_microsec);
+  const fun::RealClock::Value &clock = fun::api::RealClock();
+  const string &clock_string = boost::posix_time::to_iso_string(clock);
 
-  player->set_bet_microsec(now_microsec);
+  logger::PlayerTakeApple(player->name(), clock_string);
+
+  player->set_bet_clock(clock_string);
 }
 
 
@@ -437,22 +438,27 @@ void ResetPlayerBets(const GivingTreePtrMap &players) {
   BOOST_FOREACH(const GivingTreePtrMap::value_type &element, players) {
     // const string &player_name = element.first;
     GivingTreePtr player = GivingTree::Cast(element.second);
-    player->set_bet_microsec(0);
+    player->set_bet_clock(kEpochClockString);
   }
 }
 
 
 GivingTreePtr SelectWinner(const GivingTreePtrMap &players) {
   GivingTreePtr winner;
-  int64_t winner_microsec = 0;
+  fun::RealClock::Value winner_clock(fun::RealClock::kEpochClock);
 
   BOOST_FOREACH(const GivingTreePtrMap::value_type &element, players) {
     // const string &player_name = element.first;
     GivingTreePtr player = GivingTree::Cast(element.second);
-    int64_t bet_microsec = player->bet_microsec();
-    if (bet_microsec > winner_microsec) {
+    const string &bet_clock_string = player->bet_clock();
+    if (bet_clock_string == kEpochClockString) {
+      continue;
+    }
+    const fun::RealClock::Value &bet_clock =
+        boost::posix_time::from_iso_string(bet_clock_string);
+    if (bet_clock > winner_clock) {
       winner = player;
-      winner_microsec = bet_microsec;
+      winner_clock = bet_clock;
     }
   }
 

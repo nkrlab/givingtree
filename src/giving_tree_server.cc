@@ -51,4 +51,4 @@ class GivingTreeServerInstaller : public fun::framework::Installer {
 }  // unnamed namespace
 
 
-REGISTER_INSTALLER(giving_tree_server, GivingTreeServerInstaller)
+REGISTER_INSTALLER(GivingTreeServer, GivingTreeServerInstaller)

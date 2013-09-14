@@ -51,7 +51,7 @@
   },
   "PlayerTakeApple": {
     "player_name": "string",
-    "clock_microsec": "integer"
+    "clock": "string"
   },
   "PlayerTryGivingApples": {
     "player_name": "string",

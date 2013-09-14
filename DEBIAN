@@ -14,4 +14,4 @@
 Section: devel
 Priority: optional
 Maintainer: unknown
-Depends: funapi-dev (>=0.0.3)
+Depends: funapi-dev (>=0.5.0)
