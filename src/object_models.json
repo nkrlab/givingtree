@@ -20,8 +20,8 @@
       "apple_count" : {
         "value" : 0
       },
-      "bet_microsec" : {
-        "value" : 0
+      "bet_clock" : {
+        "value" : ""
       }
     }
   }
