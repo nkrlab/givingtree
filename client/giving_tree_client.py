@@ -17,6 +17,7 @@ import logging
 import os
 import re
 import sys
+import datetime
 import uuid
 
 from twisted.internet import reactor
@@ -174,6 +175,7 @@ class ChatReader(basic.LineReceiver, funapi_server_stub.CallbackInterface):
         request.app_message.Extensions[app_pb.player_register_name].name = cmd
 
     self.protocol.write(account_msg.SerializeToString())
+    print >> sys.stdout, 'on_message_sent: ' + str(datetime.datetime.now())
 
   # pylint: disable-msg=C0103
   def rawDataReceived(self, data):
@@ -188,6 +190,8 @@ class ChatReader(basic.LineReceiver, funapi_server_stub.CallbackInterface):
 
   def on_message_received(self, protocol, message):
     """funapi_server_stub.EventHandlerInterface"""
+    print >> sys.stdout, 'on_message_received: ' + str(datetime.datetime.now())
+
     account_msg = account_pb.AccountMessage()
     account_msg.ParseFromString(message)
     server_msg = account_msg.server_message
