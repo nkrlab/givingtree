@@ -1,0 +1,21 @@
+message PlayerRegisterName {
+  optional string name = 1;
+}
+
+
+message PlayerTakeApple {
+}
+
+
+message PlayerGiveApples {
+  optional string target_service_provider = 1;
+  optional string target_local_account = 2;
+  optional int64 apple_count = 3;
+}
+
+
+message AccountSendTalk {
+  optional string receiver_service_provider = 1;
+  optional string receiver_local_account = 2;
+  optional string talk = 3;
+}
