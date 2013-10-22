@@ -262,6 +262,7 @@ void OnPlayerRegisterName(const GivingTreePtr &world,
     logger::PlayerRegisterName(prev_name, new_name);
   }
 
+  player->set_bet_clock(kEpochClockString);
   InsertPlayer(world, player);
   logger::PlayerEnterInWorld(new_name);
 }
