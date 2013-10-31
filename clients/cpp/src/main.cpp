@@ -7,10 +7,9 @@
 #include <assert.h>
 #include <pthread.h>
 
+#include "common/info.h"
 #include "common/types.h"
 #include "giving_tree_client.h"
-
-#include <iostream>
 
 
 int main() {
@@ -21,7 +20,7 @@ int main() {
   bool connected = client.Connect(kRemoteIpAddress, kRemotePort);
   assert(connected == true);
 
-  std::cout << "main: net_recv_thread starts." << std::endl;
+  Info::out("main: net_recv_thread starts.");
   pthread_t net_recv_thread;
   {
     int result = pthread_create(
@@ -32,7 +31,7 @@ int main() {
     assert(result == 0);
   }
 
-  std::cout << "main: key_input_thread starts." << std::endl;
+  Info::out("main: key_input_thread starts.");
   pthread_t key_input_thread;
   {
     int result = pthread_create(
@@ -43,15 +42,15 @@ int main() {
     assert(result == 0);
   }
 
-  std::cout << "main: GivingTreeClient starts." << std::endl;
+  Info::out("main: GivingTreeClient starts.");
   client.Run();
-  std::cout << "main: GivingTreeClient ends." << std::endl;
+  Info::out("main: GivingTreeClient ends.");
 
   pthread_join(key_input_thread, NULL);
-  std::cout << "main: key_input_thread joins." << std::endl;
+  Info::out("main: key_input_thread joins.");
 
   pthread_join(net_recv_thread, NULL);
-  std::cout << "main: net_recv_thread joins." << std::endl;
+  Info::out("main: net_recv_thread joins.");
 
   return 0;
 }

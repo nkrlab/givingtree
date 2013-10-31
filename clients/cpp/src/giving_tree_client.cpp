@@ -8,10 +8,10 @@
 
 #include <stdlib.h>
 
-#include <iostream>
 #include <vector>
 
 #include "client_app_message_writer.h"
+#include "common/info.h"
 #include "common/split.h"
 #include "funapi_client/client_message_writer.h"
 
@@ -113,20 +113,20 @@ bool GivingTreeClient::OnCommandQueued(const Command &cmd) {
 void GivingTreeClient::OnAccountLoginResponse(
     const ::AccountLoginResponse &login_response) {
   bool success = (login_response.fail_code() == 0);
-  std::cout << "AccountLoginResponse: " << success << std::endl;
+  Info::out("AccountLoginResponse: " + Info::str(success));
 }
 
 
 void GivingTreeClient::OnAccountLogoutResponse(
     const ::AccountLogoutResponse &logout_response) {
   bool success = (logout_response.fail_code() == 0);
-  std::cout << "AccountLogoutResponse: " << success << std::endl;
+  Info::out("AccountLogoutResponse: " + Info::str(success));
 }
 
 
 void GivingTreeClient::OnAccountTimeout(
     const ::AccountTimeout &timeout) {
-  std::cout << "AccountTimeout." << std::endl;
+  Info::out("AccountTimeout.");
 }
 
 
@@ -153,12 +153,12 @@ void GivingTreeClient::OnAttributeUpdatesMessage(
         attribute_updates.attribute_update(index);
     string obj_uuid_str =
         Uuid::ToString(Uuid::FromBytes(update.object_uuid().c_str()));
-    std::cout << "AttrUpdate[" << obj_uuid_str.substr(0, 8)
-              << "],[" << update.attribute_name()
-              << "],[" << update.new_json()
-              << "]" << std::endl;
+    Info::out("AttrUpdate[" + obj_uuid_str.substr(0, 8)
+              + "],[" + update.attribute_name()
+              + "],[" + update.new_json()
+              + "]");
   }
-  std::cout << std::endl;
+  Info::out();
 }
 
 
@@ -178,9 +178,8 @@ void GivingTreeClient::OnServerAppMessage(
       break;
     }
     default: {
-      std::cerr << "GivingTreeClient::OnServerAppMessage: "
-                << "Unknown Message Type " << type
-                << std::endl;
+      Info::err("GivingTreeClient::OnServerAppMessage: "
+                "Unknown Message Type " + Info::str((int64_t) type));
       assert(false);
       break;
     }
@@ -197,7 +196,7 @@ void GivingTreeClient::OnAccountReceiveTalk(
   const string &talk = account_receive_talk.talk();
   const string &sender = sender_service_provider + ':' + sender_local_account;
 
-  std::cout << "Talk from [" + sender + "]: [" + talk + "]" << std::endl;
+  Info::out("Talk from [" + sender + "]: [" + talk + "]");
 }
 
 
@@ -209,9 +208,9 @@ void GivingTreeClient::OnAccountSendTalkResponse(
       account_send_talk_response.fail_description();
 
   if (fail_code == 0) {
-    std::cout << "TalkSend: success." << std::endl;
+    Info::out("TalkSend: success.");
   } else {
-    std::cout << "TalkSend: error: " << fail_description << std::endl;
+    Info::out("TalkSend: error: " + fail_description);
   }
 }
 
@@ -345,9 +344,9 @@ bool GivingTreeClient::VerifyCommandSize(
     const size_t &expected_size,
     const string &cmd_example) {
   if (input_size != expected_size) {
-    std::cout << "error: cmd.size() != " << expected_size
-              << " : " << input_size << std::endl;
-    std::cout << "example> " << cmd_example << std::endl;
+    Info::out("error: cmd.size() != " + Info::str(expected_size)
+              + " : " + Info::str(input_size));
+    Info::out("example> " + cmd_example);
     return false;
   }
   return true;
