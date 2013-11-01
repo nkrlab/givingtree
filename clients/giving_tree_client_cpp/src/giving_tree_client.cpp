@@ -40,7 +40,7 @@ void *GivingTreeClient::RunKeyInputThread(void *args) {
 
   while (true) {
     string cmd_line;
-    std::getline(std::cin, cmd_line);
+    Info::in(&cmd_line);
     Command cmd = common::Split(cmd_line);
     command_queue->Push(cmd);
 

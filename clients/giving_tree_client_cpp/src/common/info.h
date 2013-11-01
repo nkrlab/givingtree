@@ -9,7 +9,6 @@
 
 #include <stdint.h>
 
-#include <iostream>
 #include <sstream>
 #include <string>
 
@@ -18,25 +17,17 @@ namespace common {
 
 class Info {
  public:
-  static void out(const std::string &info) {
-    out(std::cout, info);
-  }
-  static void out(const std::stringstream &info) {
-    out(info.str());
-  }
-  static void out() {
-    out("");
-  }
+  static void in(std::string *info);
 
-  static void err(const std::string &info) {
-    out(std::cerr, info);
-  }
-  static void err(const std::stringstream &info) {
-    err(info.str());
-  }
-  static void err() {
-    err("");
-  }
+  static void out(const char *info);
+  static void out(const std::string &info) { out(info.c_str()); }
+  static void out(const std::stringstream &info) { out(info.str()); }
+  static void out() { out(""); }
+
+  static void err(const char *info);
+  static void err(const std::string &info) { err(info.c_str()); }
+  static void err(const std::stringstream &info) { err(info.str()); }
+  static void err() { err(""); }
 
   static std::string str(const bool &b) {
     return ((b == true) ? "true" : "false");
@@ -48,11 +39,6 @@ class Info {
   }
   static std::string str(const size_t &n) {
     return str(static_cast<int64_t>(n));
-  }
-
- private:
-  static void out(std::ostream &o, const std::string &info) {
-    o << info << std::endl;
   }
 };
 
