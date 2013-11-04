@@ -1,0 +1,196 @@
+// Copyright (C) 2013 iFunFactory Inc. All Rights Reserved.
+//
+// This work is confidential and proprietary to iFunFactory Inc. and
+// must not be used, disclosed, copied, or distributed without the prior
+// consent of iFunFactory Inc.
+
+
+//////////////////////////////////////////////////////////////////////////////
+// funapi account message.
+
+
+message AccountMessage {
+  enum Type {
+    kClientAccountMessage = 2;
+    kServerAccountMessage = 3;
+    kMaintenanceAccountMessage = 4;
+  }
+  optional Type type = 1;
+
+  optional ClientAccountMessage client_message = 2;
+  optional ServerAccountMessage server_message = 3;
+  optional MaintenanceAccountMessage maintenance_message = 4;
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+// account messages from client to server.
+
+
+message ClientAccountMessage {
+  enum Type {
+    kAccountLoginRequest = 2;
+    kAccountLogoutRequest = 3;
+    kVersionRequest = 12;
+    kSuperAccountRequest = 13;
+    kClientAppMessage = 15;
+  }
+  optional Type type = 1;
+
+  optional AccountLoginRequest login = 2;
+  optional AccountLogoutRequest logout = 3;
+  optional VersionRequest version_request = 12;
+  optional SuperAccountRequest super_request = 13;
+  optional ClientAppMessage app_message = 15;
+}
+
+
+message AccountLoginRequest {
+  optional string authentication_service_provider = 1
+      [default = "free"];
+  optional string local_account = 2;
+  optional string authentication_key = 3;
+}
+
+
+message AccountLogoutRequest {
+}
+
+
+message VersionRequest {
+  optional bytes app_uuid = 1;
+  optional string client_version = 2;
+}
+
+
+message SuperAccountRequest {
+  optional bytes request_uuid = 1;
+  optional string command = 2;
+  optional string parameters_json = 3;
+}
+
+
+message ClientAppMessage {
+  extensions 1000 to max;
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+// account messages from server to client.
+
+
+message ServerAccountMessage {
+  enum Type {
+    kAccountLoginResponse = 2;
+    kAccountLogoutResponse = 3;
+    kAccountTimeout = 5;
+    kAccountSessionReplaced = 6;
+    kVersionResponse = 12;
+    kSuperAccountResponse = 13;
+    kAttributeUpdatesMessage = 14;
+    kServerAppMessage = 15;
+  }
+  optional Type type = 1;
+
+  optional AccountLoginResponse login = 2;
+  optional AccountLogoutResponse logout = 3;
+  optional AccountTimeout timeout = 5;
+  optional AccountSessionReplaced session_replaced = 6;
+  optional VersionResponse version_response = 12;
+  optional SuperAccountResponse super_response = 13;
+  optional AttributeUpdatesMessage attribute_updates = 14;
+  optional ServerAppMessage app_message = 15;
+}
+
+
+message AccountLoginResponse {
+  enum FailCode {
+    kSuccess = 0;
+    kUnknownFail = 1;
+    kAlreadyLoggedIn = 2;
+    kPendingSession = 3;
+    kPendingAccountId = 4;
+    kServiceProviderNotAvailable = 5;
+    kWrongAuthKey = 6;
+    kPersonalInfoFail = 7;
+  }
+  optional FailCode fail_code = 1;
+  optional string fail_description = 2;
+}
+
+
+message AccountLogoutResponse {
+  enum FailCode {
+    kSuccess = 0;
+    kNotExistingAccount = 1;
+  }
+  optional FailCode fail_code = 1;
+  optional string fail_description = 2;
+}
+
+
+message AccountTimeout {
+}
+
+
+message AccountSessionReplaced {
+}
+
+
+message VersionResponse {
+  enum Result {
+    kCompatible = 0;
+    kNotCompatibleAppUuid = 1;
+    kNotCompatibleVersion = 2;
+  }
+
+  optional Result result = 1;
+  optional string current_version = 2;
+  optional string update_info = 3;
+  optional string update_uri = 4;
+}
+
+
+message SuperAccountResponse {
+  optional bytes request_uuid = 1;
+  optional int64 result_code = 2;
+  optional string result_description = 3;
+  optional string result_json = 4;
+}
+
+
+message AttributeUpdatesMessage {
+  // TODO(khpark): consider alternative:
+  // message ObjectUpdateMessage {
+  //   optional bytes object_uuid = 1;
+  //   message AttributeUpdateMessage {
+  //     optional string attribute_name = 1;
+  //     optional string old_json = 2;
+  //     optional string new_json = 3;
+  //   }
+  //   repeated AttributeUpdateMessage attribute_update = 1;
+  // }
+  // repeated ObjectUpdateMessage object_update = 1;
+
+  message AttributeUpdateMessage {
+    optional bytes object_uuid = 1;
+    optional string attribute_name = 2;
+    optional string old_json = 3;
+    optional string new_json = 4;
+  }
+  repeated AttributeUpdateMessage attribute_update = 1;
+}
+
+
+message ServerAppMessage {
+  extensions 1000 to max;
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+// account messages from maintenance to client.
+
+
+message MaintenanceAccountMessage {
+  optional string info = 1;
+}

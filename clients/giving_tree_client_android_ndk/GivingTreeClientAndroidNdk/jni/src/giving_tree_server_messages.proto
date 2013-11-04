@@ -1,0 +1,11 @@
+message AccountReceiveTalk {
+  optional string sender_service_provider = 1;
+  optional string sender_local_account = 2;
+  optional string talk = 3;
+}
+
+
+message AccountSendTalkResponse {
+  optional int64 fail_code = 1;
+  optional string fail_description = 2;
+}
