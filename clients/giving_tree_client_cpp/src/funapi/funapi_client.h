@@ -12,7 +12,7 @@
 #include "common/concurrent_queue.h"
 #include "common/concurrent_uuid.h"
 #include "common/types.h"
-#include "funapi/account_messages.pb.h"
+#include "funapi/account/account_messages.pb.h"
 
 
 namespace fun {

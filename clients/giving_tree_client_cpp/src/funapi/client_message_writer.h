@@ -7,7 +7,7 @@
 #ifndef FUNAPI_CLIENT_MESSAGE_WRITER_H_
 #define FUNAPI_CLIENT_MESSAGE_WRITER_H_
 
-#include "funapi/account_messages.pb.h"
+#include "funapi/account/account_messages.pb.h"
 
 #include "common/types.h"
 

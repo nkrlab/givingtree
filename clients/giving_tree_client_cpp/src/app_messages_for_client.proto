@@ -4,7 +4,7 @@
 //         giving_tree_server_messages.proto
 
 
-import "funapi/account_messages.proto";
+import "funapi/account/account_messages.proto";
 import "giving_tree_client_messages.proto";
 import "giving_tree_server_messages.proto";
 

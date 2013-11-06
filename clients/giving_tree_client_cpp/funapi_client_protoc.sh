@@ -3,9 +3,9 @@
 SRC=src
 GEN=$SRC/gen
 
-mkdir -p $GEN/funapi
-rm -rf $GEN/funapi/*.pb.*
+mkdir -p $GEN/funapi/account
+rm -rf $GEN/funapi/account/*.pb.*
 
 protoc --cpp_out=$GEN \
        --proto_path=$SRC \
-       $SRC/funapi/account_messages.proto
+       $SRC/funapi/account/account_messages.proto
