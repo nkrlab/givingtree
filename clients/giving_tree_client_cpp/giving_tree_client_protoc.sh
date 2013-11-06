@@ -16,4 +16,4 @@ protoc --cpp_out=$GEN \
 
 protoc --cpp_out=$GEN \
        --proto_path=$SRC \
-       $SRC/app_messages_for_client.proto
+       $SRC/app_messages.proto
