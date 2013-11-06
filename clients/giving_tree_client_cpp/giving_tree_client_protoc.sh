@@ -1,6 +1,11 @@
 #!/bin/bash -e
 
-SRC=src
+PROJECT_ROOT=$1
+if [[ "$1" == "" ]] ; then
+  PROJECT_ROOT=.
+fi
+
+SRC=$PROJECT_ROOT/src
 GEN=$SRC/gen
 
 mkdir -p $GEN
