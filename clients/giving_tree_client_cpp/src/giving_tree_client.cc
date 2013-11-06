@@ -13,7 +13,7 @@
 #include "client_app_message_writer.h"
 #include "common/info.h"
 #include "common/split.h"
-#include "funapi_client/client_message_writer.h"
+#include "funapi/client_message_writer.h"
 
 
 namespace giving_tree {

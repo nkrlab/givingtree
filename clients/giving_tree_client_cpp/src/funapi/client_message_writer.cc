@@ -4,7 +4,7 @@
 // must not be used, disclosed, copied, or distributed without the prior
 // consent of iFunFactory Inc.
 
-#include "funapi_client/client_message_writer.h"
+#include "funapi/client_message_writer.h"
 
 
 namespace fun {

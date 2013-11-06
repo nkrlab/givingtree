@@ -4,7 +4,7 @@
 // must not be used, disclosed, copied, or distributed without the prior
 // consent of iFunFactory Inc.
 
-#include "funapi_client/funapi_client.h"
+#include "funapi/funapi_client.h"
 
 #include <arpa/inet.h>
 #include <assert.h>

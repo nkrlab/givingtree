@@ -4,15 +4,15 @@
 // must not be used, disclosed, copied, or distributed without the prior
 // consent of iFunFactory Inc.
 
-#ifndef FUNAPI_CLIENT_FUNAPI_CLIENT_H_
-#define FUNAPI_CLIENT_FUNAPI_CLIENT_H_
+#ifndef FUNAPI_FUNAPI_CLIENT_H_
+#define FUNAPI_FUNAPI_CLIENT_H_
 
 #include <sys/socket.h>
 
 #include "common/concurrent_queue.h"
 #include "common/concurrent_uuid.h"
 #include "common/types.h"
-#include "funapi_client/account_messages.pb.h"
+#include "funapi/account_messages.pb.h"
 
 
 namespace fun {
@@ -87,4 +87,4 @@ class FunapiClient {
 
 }  // namespace fun
 
-#endif  // FUNAPI_CLIENT_FUNAPI_CLIENT_H_
+#endif  // FUNAPI_FUNAPI_CLIENT_H_
