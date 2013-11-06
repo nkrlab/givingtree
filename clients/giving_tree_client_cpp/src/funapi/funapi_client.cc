@@ -172,10 +172,10 @@ bool FunapiClient::ReceiveUntil(
     uint8_t *buf,
     size_t *offset) {
   while (*offset < recv_size) {
-    size_t n = recv(socket_fd, buf + *offset, kBufferSize - *offset, 0);
+    int n = recv(socket_fd, buf + *offset, kBufferSize - *offset, 0);
     if (n <= 0) {
       fprintf(stderr, "FunapiClient::ReceiveUntil: "
-                      "recv_size: %lu, err_no: %d\n", n, errno);
+                      "recv_size: %d, err_no: %d\n", n, errno);
       return false;
     }
     *offset += n;
