@@ -13,7 +13,7 @@
 #include "client_app_message_writer.h"
 #include "common/info.h"
 #include "common/split.h"
-#include "funapi_client/client_message_writer.h"
+#include "funapi/client_message_writer.h"
 
 
 namespace giving_tree {
@@ -56,19 +56,9 @@ void GivingTreeClient::Run() {
 
   bool quit = false;
   while (quit == false) {
-    string msg_string;
-    bool msg_queued = message_queue()->TryPop(&msg_string);
+    ::AccountMessage account_msg;
+    bool msg_queued = message_queue()->TryPop(&account_msg);
     if (msg_queued == true) {
-      Info::out("GivingTreeClient::Run(): message popped: " +
-                Info::str(msg_string.size()));
-
-      ::AccountMessage account_msg;
-      bool parsed = account_msg.ParseFromString(msg_string);
-      if (parsed == false) {
-        Info::err("GivingTreeClient::Run(): failed to parse message.");
-        break;
-      }
-
       OnMessageQueued(account_msg);
     }
 

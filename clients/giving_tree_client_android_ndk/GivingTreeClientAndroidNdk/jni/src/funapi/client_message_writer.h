@@ -4,10 +4,10 @@
 // must not be used, disclosed, copied, or distributed without the prior
 // consent of iFunFactory Inc.
 
-#ifndef FUNAPI_CLIENT_CLIENT_MESSAGE_WRITER_H_
-#define FUNAPI_CLIENT_CLIENT_MESSAGE_WRITER_H_
+#ifndef FUNAPI_CLIENT_MESSAGE_WRITER_H_
+#define FUNAPI_CLIENT_MESSAGE_WRITER_H_
 
-#include "funapi_client/account_messages.pb.h"
+#include "funapi/account/account_messages.pb.h"
 
 #include "common/types.h"
 
@@ -37,4 +37,4 @@ class ClientMessageWriter {
 
 }  // namespace fun
 
-#endif  // FUNAPI_CLIENT_CLIENT_MESSAGE_WRITER_H_
+#endif  // FUNAPI_CLIENT_MESSAGE_WRITER_H_

@@ -15,6 +15,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "common/info.h"
+
 
 namespace fun {
 
@@ -51,7 +53,8 @@ void FunapiClient::RunNetworkReceiveThread(FunapiClient *funapi_client) {
     // Decodes length of message body.
     size_t body_len = DecodeMessageSize(buf);
     if (body_len < SessionId::kSize) {
-      // TODO(khpark): output error message.
+      Info::err("RunNetworkReceiveThread: invalid body_len: " +
+                Info::str(body_len));
       break;
     }
 
@@ -69,7 +72,6 @@ void FunapiClient::RunNetworkReceiveThread(FunapiClient *funapi_client) {
     assert(uuid.IsNil() == false);
     session_id->set_uuid(uuid);
 
-
     // Decodes AccountMessage.
     ::AccountMessage account_msg;
     size_t session_id_len = session_id->size();
@@ -77,7 +79,7 @@ void FunapiClient::RunNetworkReceiveThread(FunapiClient *funapi_client) {
         buf + kHeaderLength + session_id_len,
         body_len - session_id_len);
     if (parsed == false) {
-      // TODO(khpark): output error message.
+      Info::err("GivingTreeClient::Run(): failed to parse message.");
       break;
     }
 
@@ -96,7 +98,8 @@ bool FunapiClient::Connect(const char *host_name,
   {
     struct hostent *server = gethostbyname(host_name);
     if (server == NULL) {
-      // TODO(khpark): output error message.
+      Info::err("FunapiClient::Connect: server == NULLL: " +
+                std::string(host_name));
       return false;
     }
 
@@ -112,7 +115,8 @@ bool FunapiClient::Connect(const char *host_name,
                        (struct sockaddr *) &server_addr,
                        sizeof(server_addr));
   if (result < 0) {
-    // TODO(khpark): output error message.
+    Info::err("FunapiClient::Connect: connection failed: " +
+              Info::str((int64_t) result));
     return false;
   }
 

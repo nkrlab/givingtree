@@ -7,7 +7,7 @@
 #ifndef CLIENT_APP_MESSAGE_WRITER_H_
 #define CLIENT_APP_MESSAGE_WRITER_H_
 
-#include "app_messages_for_client.pb.h"
+#include "app_messages.pb.h"
 #include "common/types.h"
 
 

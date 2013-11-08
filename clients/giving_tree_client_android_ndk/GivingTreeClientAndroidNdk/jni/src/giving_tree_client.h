@@ -11,7 +11,7 @@
 
 #include "common/concurrent_queue.h"
 #include "common/types.h"
-#include "funapi_client/funapi_client.h"
+#include "funapi/funapi_client.h"
 #include "giving_tree_server_messages.pb.h"
 
 

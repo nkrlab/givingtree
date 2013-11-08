@@ -4,7 +4,7 @@
 // must not be used, disclosed, copied, or distributed without the prior
 // consent of iFunFactory Inc.
 
-#include "funapi_client/funapi_client.h"
+#include "funapi/funapi_client.h"
 
 #include <arpa/inet.h>
 #include <assert.h>
@@ -72,14 +72,19 @@ void FunapiClient::RunNetworkReceiveThread(FunapiClient *funapi_client) {
     assert(uuid.IsNil() == false);
     session_id->set_uuid(uuid);
 
-    // Decodes message string.
+    // Decodes AccountMessage.
+    ::AccountMessage account_msg;
     size_t session_id_len = session_id->size();
-    string msg_string(
-        reinterpret_cast<char *>(buf + kHeaderLength + session_id_len),
+    bool parsed = account_msg.ParseFromArray(
+        buf + kHeaderLength + session_id_len,
         body_len - session_id_len);
+    if (parsed == false) {
+      Info::err("GivingTreeClient::Run(): failed to parse message.");
+      break;
+    }
 
     // Pushes message into message queue.
-    message_queue->Push(msg_string);
+    message_queue->Push(account_msg);
 
     // Consumes used buffer.
     ConsumeReceived(kHeaderLength + body_len, buf, &offset);
@@ -171,10 +176,10 @@ bool FunapiClient::ReceiveUntil(
     uint8_t *buf,
     size_t *offset) {
   while (*offset < recv_size) {
-    size_t n = recv(socket_fd, buf + *offset, kBufferSize - *offset, 0);
+    int n = recv(socket_fd, buf + *offset, kBufferSize - *offset, 0);
     if (n <= 0) {
       fprintf(stderr, "FunapiClient::ReceiveUntil: "
-                      "recv_size: %lu, err_no: %d\n", (unsigned long) n, errno);
+                      "recv_size: %d, err_no: %d\n", n, errno);
       return false;
     }
     *offset += n;

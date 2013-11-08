@@ -59,6 +59,8 @@ void *GivingTreeClient::RunKeyInputThread(void *args) {
 void GivingTreeClient::Run() {
   static const int64_t kFramePeriodInMicrosec = 100 * 1000;
 
+  Info::out("GivingTreeClient::Run() begins.");
+
   bool quit = false;
   while (quit == false) {
     ::AccountMessage account_msg;
@@ -77,6 +79,8 @@ void GivingTreeClient::Run() {
   }
 
   fun::FunapiClient::Close();
+
+  Info::out("GivingTreeClient::Run() ends.");
 }
 
 
@@ -216,6 +220,8 @@ void GivingTreeClient::OnAccountSendTalkResponse(
 
 
 void GivingTreeClient::OnEmptyCommand(const Command &cmd) {
+  Info::out("Command: PlayerTakeApple");
+
   ::AccountMessage *account_msg =
       ClientAppMessageWriter::CreatePlayerTakeApple();
   Send(*account_msg);
@@ -232,6 +238,8 @@ void GivingTreeClient::OnUnknownCommand(const Command &cmd) {
 
   const string &player_name = cmd[0];
 
+  Info::out("Command: PlayerRegisterName: " + player_name);
+
   ::AccountMessage *account_msg =
       ClientAppMessageWriter::CreatePlayerRegisterName(player_name);
   Send(*account_msg);
@@ -246,6 +254,7 @@ bool GivingTreeClient::OnQuitCommand(const Command &cmd) {
     return false;
   }
 
+  Info::out("Command: Quit.");
   return true;
 }
 
@@ -259,6 +268,9 @@ void GivingTreeClient::OnLoginCommand(const Command &cmd) {
   const string &service_provider = "free";
   const string &local_account = cmd[1];
   const string &auth_key = "";
+
+  Info::out("Command: AccountLoginRequest: " +
+            service_provider + ":" + local_account);
 
   ::AccountMessage *account_msg =
       fun::ClientMessageWriter::CreateAccountLoginRequest(
@@ -280,6 +292,9 @@ void GivingTreeClient::OnLogin2Command(const Command &cmd) {
   const string &local_account = cmd[2];
   const string &auth_key = cmd[3];
 
+  Info::out("Command: AccountLoginRequest: " +
+            service_provider + ":" + local_account);
+
   ::AccountMessage *account_msg =
       fun::ClientMessageWriter::CreateAccountLoginRequest(
           service_provider, local_account, auth_key);
@@ -294,6 +309,8 @@ void GivingTreeClient::OnLogoutCommand(const Command &cmd) {
   if (result == false) {
     return;
   }
+
+  Info::out("Command: AccountLogoutRequest.");
 
   ::AccountMessage *account_msg =
       fun::ClientMessageWriter::CreateAccountLogoutRequest();
@@ -312,6 +329,9 @@ void GivingTreeClient::OnGiveCommand(const Command &cmd) {
   const string &target_id = cmd[1];
   int64_t apple_count = atoi(cmd[2].c_str());
 
+  Info::out("Command: PlayerGiveApples: to: " +
+            target_id + ", count: " + Info::str(apple_count));
+
   ::AccountMessage *account_msg =
       ClientAppMessageWriter::CreatePlayerGiveApples(
           "free", target_id, apple_count);
@@ -329,6 +349,9 @@ void GivingTreeClient::OnTalkCommand(const Command &cmd) {
 
   const string &receiver_id = cmd[1];
   const string &talk = cmd[2];
+
+  Info::out("Command: AccountSendTalk: to: " +
+            receiver_id + ", talk: " + talk);
 
   ::AccountMessage *account_msg =
       ClientAppMessageWriter::CreateAccountSendTalk(
