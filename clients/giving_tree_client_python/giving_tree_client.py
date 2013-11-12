@@ -10,8 +10,6 @@
 Funapi GivingTree client.
 """
 
-import account_messages_pb2 as account_pb
-import app_messages_for_client_pb2 as app_pb
 import gflags
 import logging
 import os
@@ -24,6 +22,9 @@ from twisted.internet import reactor
 from twisted.internet import stdio
 from twisted.internet import endpoints
 from twisted.protocols import basic
+
+import funapi.account.account_messages_pb2 as account_pb
+import app_messages_pb2 as app_pb
 
 # apps 의 top-level tools directory 를 python path 에 추가한다.
 # 이로써 funapi_server_stub 을 include 할 수 있다.

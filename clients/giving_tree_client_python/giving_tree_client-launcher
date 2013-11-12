@@ -1,8 +1,8 @@
 #!/bin/bash -e
 
-protoc --python_out=. \
-       --proto_path=. \
-       ./account_messages.proto
+protoc --python_out=funapi/account \
+       --proto_path=funapi/account \
+       funapi/account/account_messages.proto
 
 protoc --python_out=. \
        --proto_path=. \
@@ -14,7 +14,7 @@ protoc --python_out=. \
 
 protoc --python_out=. \
        --proto_path=. \
-       ./app_messages_for_client.proto
+       ./app_messages.proto
 
 python giving_tree_client.py
 
