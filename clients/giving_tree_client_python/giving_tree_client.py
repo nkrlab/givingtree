@@ -7,7 +7,7 @@
 # consent of iFunFactory Inc.
 
 """
-FunAPI GivingTree client.
+Funapi GivingTree client.
 """
 
 import account_messages_pb2 as account_pb
